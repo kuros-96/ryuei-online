@@ -66,6 +66,37 @@ $("back").onclick = () => {
 
 
 // ==========================
+// 残り数字を表示
+// ==========================
+
+function updateRemaining() {
+
+  let used = 0;
+
+  for (let n = 1; n <= 9; n++) {
+
+    const button = $("n" + n);
+
+    if (
+      button &&
+      button.classList.contains("used")
+    ) {
+      used++;
+    }
+  }
+
+  const remaining = 9 - used;
+
+  const display = $("remaining");
+
+  if (display) {
+    display.textContent =
+      "残り数字：" + remaining + "枚";
+  }
+}
+
+
+// ==========================
 // 数字ボタン
 // ==========================
 
@@ -84,6 +115,9 @@ for (let n = 1; n <= 9; n++) {
     });
 
     button.classList.add("used");
+
+    // 残り数字を更新
+    updateRemaining();
 
     $("message").textContent =
       "NUMBER " + n + " を選択";
@@ -136,8 +170,6 @@ function showResult(text, win) {
 
   const overlay = $("battleOverlay");
 
-  // 演出用HTMLが無い場合は
-  // ゲームを止めない
   if (!overlay) {
     $("message").textContent = text;
     return;
@@ -171,7 +203,6 @@ function battleAnimation(p1, p2, result) {
   const left = $("p1card");
   const right = $("p2card");
 
-  // カードを表示
   left.className =
     "card battle-card left-card";
 
@@ -262,6 +293,9 @@ function handle(m) {
     $("lobby").classList.add("hidden");
     $("game").classList.remove("hidden");
 
+    // 新しいゲームなので9枚
+    updateRemaining();
+
     $("message").textContent =
       me === 1
         ? "相手の参加を待っています…"
@@ -332,6 +366,9 @@ function handle(m) {
           button.classList.remove("used");
         }
       }
+
+      // 次のラウンドなので9枚に戻す
+      updateRemaining();
 
 
       $("p1card").className =
