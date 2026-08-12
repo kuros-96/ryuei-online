@@ -209,15 +209,15 @@ function createNumberButtons() {
       selectedThisRound = true;
 
 
-      // ★★★ 今回選んだカードを青くする ★★★
+     // ========================================
+// 今ラウンドで選択した数字
+// ========================================
 
-      button.classList.add("selected");
+// 青く光らせる
+button.classList.add("selected");
 
-
-      // 使用済みにする
-
-      button.classList.add("used");
-
+// ※ここでは「used」を付けない
+// ラウンド終了後に used にする
 
       // ==============================
       // サーバーへ送信
