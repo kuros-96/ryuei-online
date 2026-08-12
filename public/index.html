@@ -1,9 +1,261 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
+
+  <title>NUMBER CROSS</title>
+
+  <link
+    rel="stylesheet"
+    href="/style.css"
+  >
+
+</head>
+
+
+<body>
+
+<main>
+
+  <!-- =========================
+       NUMBER CROSS ロゴ
+  ========================== -->
+
+  <header class="game-logo">
+
+    <div class="logo-number">
+      NUMBER
+    </div>
+
+    <div class="logo-cross">
+      CROSS
+    </div>
+
+    <div class="logo-sub">
+      ONLINE BATTLE
+    </div>
+
+    <div class="number-orbit">
+
+      <span>1</span>
+      <span>2</span>
+      <span>3</span>
+      <span>4</span>
+      <span>5</span>
+      <span>6</span>
+      <span>7</span>
+      <span>8</span>
+      <span>9</span>
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================
+       ロビー
+  ========================== -->
+
+  <section
+    id="lobby"
+    class="panel"
+  >
+
+    <input
+      id="name"
+      type="text"
+      maxlength="16"
+      placeholder="プレイヤー名"
+    >
+
+    <div class="row">
+
+      <button
+        id="create"
+        type="button"
+      >
+        ルームを作る
+      </button>
+
+    </div>
+
+
+    <div class="join">
+
+      <input
+        id="room"
+        type="text"
+        maxlength="6"
+        placeholder="ルームコード"
+      >
+
+      <button
+        id="join"
+        type="button"
+      >
+        参加する
+      </button>
+
+    </div>
+
+
+    <p id="status">
+      ルームを作成するか、コードを入力して参加してください。
+    </p>
+
+  </section>
+
+
+  <!-- =========================
+       ゲーム画面
+  ========================== -->
+
+  <section
+    id="game"
+    class="panel hidden"
+  >
+
+    <div class="top">
+
+      <span>
+        ROOM
+        <b id="roomId">---</b>
+      </span>
+
+      <span>
+        R<span id="round">1</span>/9
+      </span>
+
+      <span id="scores">
+        0 - 0
+      </span>
+
+    </div>
+
+
+    <!-- =========================
+         バトルエリア
+    ========================== -->
+
+    <div class="arena">
+
+      <!-- PLAYER 1 -->
+
+      <div>
+
+        <h2 id="p1name">
+          PLAYER 1
+        </h2>
+
+        <div
+          id="p1card"
+          class="card hidden"
+        >
+          ？
+        </div>
+
+        <div id="p1state">
+          待機中
+        </div>
+
+      </div>
+
+
+      <!-- PLAYER 2 -->
+
+      <div>
+
+        <h2 id="p2name">
+          PLAYER 2
+        </h2>
+
+        <div
+          id="p2card"
+          class="card hidden"
+        >
+          ？
+        </div>
+
+        <div id="p2state">
+          待機中
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- =========================
+         メッセージ
+    ========================== -->
+
+    <div
+      id="message"
+      class="message"
+    >
+      相手を待っています…
+    </div>
+
+
+    <!-- =========================
+         残り数字
+    ========================== -->
+
+    <div
+      id="remaining"
+      class="remaining"
+    >
+      残り数字：9枚
+    </div>
+
+
+    <!-- =========================
+         数字ボタン
+         app.jsがここに1～9を生成
+    ========================== -->
+
+    <div
+      id="buttons"
+      class="buttons"
+    ></div>
+
+
+    <!-- =========================
+         ルール
+    ========================== -->
+
+    <p class="rule">
+      通常は大きい数字が勝ち。1は9に勝つ。<br>
+      同じ数字は禁止・使用済み数字は再使用不可。
+    </p>
+
+
+    <!-- =========================
+         戻る
+    ========================== -->
+
+    <button
+      id="back"
+      type="button"
+    >
+      ロビーへ戻る
     </button>
 
   </section>
 
 </main>
 
+
+<!-- =========================
+     勝敗オーバーレイ
+========================== -->
 
 <div
   id="battleOverlay"
@@ -15,7 +267,12 @@
 </div>
 
 
-<script src="app.js"></script>
+<!-- =========================
+     JavaScript
+========================== -->
+
+<script src="/app.js"></script>
 
 </body>
+
 </html>
