@@ -97,14 +97,15 @@ function updateRemaining() {
 
 
 // ==========================
-// 数字ボタン
-// ==========================
-
-// ==========================
-// 数字ボタン
+// このラウンドの選択状態
 // ==========================
 
 let selectedThisRound = false;
+
+
+// ==========================
+// 数字ボタン作成
+// ==========================
 
 for (let n = 1; n <= 9; n++) {
 
@@ -115,27 +116,39 @@ for (let n = 1; n <= 9; n++) {
 
   button.onclick = () => {
 
-    // このラウンドですでに選択済みなら何もしない
+    // このラウンドですでに選択済み
     if (selectedThisRound) {
       return;
     }
 
+    // ==========================
     // 選択済みにする
+    // ==========================
+
     selectedThisRound = true;
 
+    // 今回選んだカードを青くする
+    button.classList.add("selected");
+
+    // 使用済みにする
+    button.classList.add("used");
+
+    // サーバーへ送信
     send({
       type: "move",
       number: n
     });
-
-    button.classList.add("used");
 
     updateRemaining();
 
     $("message").textContent =
       "NUMBER " + n + " を選択";
 
-    // 他の数字も一時的に押せなくする
+
+    // ==========================
+    // 他の数字を押せなくする
+    // ==========================
+
     for (let i = 1; i <= 9; i++) {
 
       const otherButton = $("n" + i);
@@ -144,7 +157,6 @@ for (let n = 1; n <= 9; n++) {
         otherButton.disabled = true;
       }
     }
-
   };
 
   $("buttons").appendChild(button);
@@ -227,7 +239,10 @@ function battleAnimation(p1, p2, result) {
   const left = $("p1card");
   const right = $("p2card");
 
+  // ==========================
   // カード表示
+  // ==========================
+
   left.className =
     "card battle-card left-card";
 
@@ -265,7 +280,7 @@ function battleAnimation(p1, p2, result) {
 
 
   // ==========================
-  // 結果発表まで「間」を作る
+  // 間を作る
   // ==========================
 
   setTimeout(() => {
@@ -294,7 +309,10 @@ function battleAnimation(p1, p2, result) {
       result === (me === 1 ? 1 : -1);
 
 
+    // ==========================
     // 勝者・敗者カード
+    // ==========================
+
     if (result === 1) {
 
       left.classList.add("winner-card");
@@ -308,7 +326,10 @@ function battleAnimation(p1, p2, result) {
     }
 
 
+    // ==========================
     // 引き分け
+    // ==========================
+
     if (result === 0) {
 
       showResult(
@@ -323,7 +344,10 @@ function battleAnimation(p1, p2, result) {
     }
 
 
+    // ==========================
     // 勝敗表示
+    // ==========================
+
     showResult(
       win ? "YOU WIN!" : "YOU LOSE!",
       win
@@ -338,22 +362,29 @@ function battleAnimation(p1, p2, result) {
   }, 1900);
 }
 
+
 // ==========================
 // サーバーからのデータ処理
 // ==========================
 
 function handle(m) {
 
-
+  // ==========================
   // エラー
+  // ==========================
+
   if (m.type === "error") {
 
     alert(m.message);
+
     return;
   }
 
 
+  // ==========================
   // ルーム参加成功
+  // ==========================
+
   if (m.type === "joined") {
 
     me = m.player;
@@ -376,7 +407,10 @@ function handle(m) {
   }
 
 
+  // ==========================
   // ゲーム状態
+  // ==========================
+
   if (m.type === "state") {
 
     $("round").textContent =
@@ -406,7 +440,10 @@ function handle(m) {
   }
 
 
+  // ==========================
   // 自分が数字を選択
+  // ==========================
+
   if (m.type === "waiting") {
 
     $("message").textContent =
@@ -416,7 +453,10 @@ function handle(m) {
   }
 
 
+  // ==========================
   // ラウンド結果
+  // ==========================
+
   if (m.type === "roundResult") {
 
     battleAnimation(
@@ -426,39 +466,55 @@ function handle(m) {
     );
 
 
-   setTimeout(() => {
+    setTimeout(() => {
 
-  // 使用済み数字は残す
-  // ただし次のラウンドでは1枚選べるようにする
+      // ==========================
+      // 次のラウンドへ
+      // ==========================
 
-  selectedThisRound = false;
+      selectedThisRound = false;
 
-  for (let n = 1; n <= 9; n++) {
 
-    const button = $("n" + n);
+      for (let n = 1; n <= 9; n++) {
 
-    if (button) {
+        const button = $("n" + n);
 
-      // すでに使った数字は押せない
-      // まだ使っていない数字だけ押せる
-      button.disabled =
-        button.classList.contains("used");
-    }
-  }
+        if (button) {
 
-  $("p1card").className =
-    "card hidden";
+          // ★ 今ラウンドの青色を解除
+          button.classList.remove("selected");
 
-  $("p2card").className =
-    "card hidden";
 
-}, 2800);
+          // ==========================
+          // 使用済み数字は押せない
+          // ==========================
+
+          button.disabled =
+            button.classList.contains("used");
+        }
+      }
+
+
+      // ==========================
+      // バトルカードを隠す
+      // ==========================
+
+      $("p1card").className =
+        "card hidden";
+
+      $("p2card").className =
+        "card hidden";
+
+    }, 2800);
 
     return;
   }
 
 
+  // ==========================
   // ゲーム終了
+  // ==========================
+
   if (m.type === "gameOver") {
 
     const win =
@@ -486,7 +542,10 @@ function handle(m) {
   }
 
 
+  // ==========================
   // 相手退出
+  // ==========================
+
   if (m.type === "opponentLeft") {
 
     $("message").textContent =
