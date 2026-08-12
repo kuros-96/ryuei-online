@@ -210,16 +210,7 @@ for (
 
     // ★ 今回選んだカードを青くする
 
-    button.classList.add(
-      "selected"
-    );
-
-
-    // 使用済みにする
-
-    button.classList.add(
-      "used"
-    );
+button.classList.add("selected");
 
 
     // --------------------------
@@ -720,19 +711,13 @@ function handle(m) {
 
           // ★ 青色を解除
 
-          button.classList.remove(
-            "selected"
-          );
+if (button.classList.contains("selected")) {
+  button.classList.remove("selected");
+  button.classList.add("used");
+}
 
-
-          // --------------------------
-          // 使用済みはロック
-          // --------------------------
-
-          button.disabled =
-            button.classList.contains(
-              "used"
-            );
+button.disabled =
+  button.classList.contains("used");
         }
       }
 
