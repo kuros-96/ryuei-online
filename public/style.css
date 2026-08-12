@@ -4,12 +4,7 @@
 
 body {
   margin: 0;
-  background:
-    radial-gradient(
-      circle at center,
-      #20242c 0%,
-      #101114 65%
-    );
+  background: #101114;
   color: #eee;
   font-family: system-ui, "Yu Gothic", sans-serif;
   min-height: 100vh;
@@ -21,9 +16,10 @@ main {
   padding: 24px;
 }
 
-/* ==========================
-   ボタン
-========================== */
+
+/* =========================
+   共通
+========================= */
 
 button {
   border: 0;
@@ -33,64 +29,44 @@ button {
   color: #fff;
   font-weight: 700;
   cursor: pointer;
-  transition:
-    transform .15s,
-    box-shadow .15s,
-    background .15s;
 }
 
 button:hover {
   background: #505560;
-  transform: translateY(-2px);
 }
 
 button:disabled {
   cursor: not-allowed;
 }
 
-/* ==========================
+
+/* =========================
    ロゴ
-========================== */
+========================= */
 
 .game-logo {
-  position: relative;
   text-align: center;
   margin: 15px 0 30px;
   padding: 25px 10px 10px;
-  overflow: hidden;
 }
 
 .logo-number {
   font-size: clamp(42px, 10vw, 78px);
-  font-weight: 1000;
+  font-weight: 900;
   font-style: italic;
   letter-spacing: .08em;
   line-height: .9;
   color: #fff;
-
-  text-shadow:
-    3px 3px 0 #444,
-    0 0 10px #fff,
-    0 0 25px #999;
-
-  animation: logoNumber .8s ease-out;
 }
 
 .logo-cross {
   margin-left: 35px;
   font-size: clamp(48px, 12vw, 92px);
-  font-weight: 1000;
+  font-weight: 900;
   font-style: italic;
   letter-spacing: .06em;
   line-height: .9;
   color: #fff;
-
-  text-shadow:
-    4px 4px 0 #333,
-    0 0 12px #fff,
-    0 0 35px #888;
-
-  animation: logoCross 1s ease-out;
 }
 
 .logo-sub {
@@ -99,8 +75,6 @@ button:disabled {
   font-weight: bold;
   letter-spacing: .45em;
   color: #aaa;
-
-  animation: logoSub 1.5s ease-out;
 }
 
 .number-orbit {
@@ -108,71 +82,40 @@ button:disabled {
   justify-content: center;
   gap: 7px;
   margin-top: 22px;
-  opacity: .55;
+  opacity: .6;
 }
 
 .number-orbit span {
   width: 30px;
   height: 30px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: 1px solid #777;
   border-radius: 5px;
-
-  font-weight: bold;
   background: #16181d;
-
-  animation: numberFloat 2s ease-in-out infinite;
 }
 
-.number-orbit span:nth-child(2) {
-  animation-delay: .1s;
-}
 
-.number-orbit span:nth-child(3) {
-  animation-delay: .2s;
-}
-
-.number-orbit span:nth-child(4) {
-  animation-delay: .3s;
-}
-
-.number-orbit span:nth-child(5) {
-  animation-delay: .4s;
-}
-
-.number-orbit span:nth-child(6) {
-  animation-delay: .5s;
-}
-
-.number-orbit span:nth-child(7) {
-  animation-delay: .6s;
-}
-
-.number-orbit span:nth-child(8) {
-  animation-delay: .7s;
-}
-
-.number-orbit span:nth-child(9) {
-  animation-delay: .8s;
-}
-
-/* ==========================
-   ロビー / パネル
-========================== */
+/* =========================
+   パネル
+========================= */
 
 .panel {
   background: #1c1d21;
   border: 1px solid #45474d;
   border-radius: 16px;
   padding: 20px;
-
-  box-shadow:
-    0 15px 50px rgba(0, 0, 0, .3);
 }
+
+.hidden {
+  display: none !important;
+}
+
+
+/* =========================
+   入力
+========================= */
 
 input {
   background: #101114;
@@ -203,13 +146,10 @@ input {
   color: #aaa;
 }
 
-.hidden {
-  display: none !important;
-}
 
-/* ==========================
-   上部情報
-========================== */
+/* =========================
+   上部
+========================= */
 
 .top {
   display: flex;
@@ -218,9 +158,10 @@ input {
   font-size: 14px;
 }
 
-/* ==========================
+
+/* =========================
    バトルエリア
-========================== */
+========================= */
 
 .arena {
   display: grid;
@@ -234,18 +175,17 @@ input {
   border: 2px solid #444;
   border-radius: 14px;
   padding: 14px;
-  background: rgba(0, 0, 0, .15);
 }
 
-/* ==========================
-   バトルカード
-========================== */
+
+/* =========================
+   カード
+========================= */
 
 .card {
   height: 145px;
   width: 110px;
   margin: 10px auto;
-
   border-radius: 12px;
 
   display: flex;
@@ -257,30 +197,23 @@ input {
 
   background: #eee;
   color: #111;
-
   border: 2px solid #fff;
 }
 
-.card.dark {
-  background: #222;
-  color: #fff;
-  border: 2px solid #aaa;
-}
-
 .card.hidden {
-  background:
-    linear-gradient(
-      135deg,
-      #222,
-      #555
-    );
+  background: linear-gradient(
+    135deg,
+    #222,
+    #555
+  );
 
   color: #777;
 }
 
-/* ==========================
+
+/* =========================
    メッセージ
-========================== */
+========================= */
 
 .message {
   text-align: center;
@@ -296,9 +229,10 @@ input {
   font-weight: bold;
 }
 
-/* ==========================
+
+/* =========================
    数字ボタン
-========================== */
+========================= */
 
 .buttons {
   display: grid;
@@ -313,59 +247,37 @@ input {
   min-height: 52px;
 }
 
-/* ==========================
-   ★ 今ラウンドで選択した数字
-========================== */
+
+/* =========================
+   ★ 選択中のカード
+========================= */
 
 .buttons button.selected {
-  background:
-    linear-gradient(
-      145deg,
-      #2196f3,
-      #0d47a1
-    );
+  background: linear-gradient(
+    145deg,
+    #2196f3,
+    #0d47a1
+  );
 
-  color: #fff;
+  color: white;
 
   border: 2px solid #64b5f6;
 
   transform:
-    translateY(-7px)
-    scale(1.06);
+    translateY(-6px)
+    scale(1.05);
 
   box-shadow:
-    0 0 8px #2196f3,
-    0 0 20px #2196f3,
-    0 0 40px rgba(33, 150, 243, .8);
+    0 0 10px #2196f3,
+    0 0 25px #2196f3;
 
-  z-index: 10;
-
-  animation:
-    selectedCard
-    .8s
-    ease-in-out
-    infinite
-    alternate;
+  z-index: 5;
 }
 
-@keyframes selectedCard {
-  from {
-    box-shadow:
-      0 0 8px #2196f3,
-      0 0 18px #2196f3;
-  }
 
-  to {
-    box-shadow:
-      0 0 15px #42a5f5,
-      0 0 35px #2196f3,
-      0 0 50px rgba(33, 150, 243, .8);
-  }
-}
-
-/* ==========================
-   使用済み数字
-========================== */
+/* =========================
+   使用済み
+========================= */
 
 .buttons button.used {
   opacity: .25;
@@ -374,13 +286,7 @@ input {
   color: #666;
   border-color: #333;
   transform: scale(.92);
-  cursor: not-allowed;
   pointer-events: none;
-
-  animation:
-    usedCard
-    .35s
-    ease-out;
 }
 
 .buttons button.used::after {
@@ -394,30 +300,16 @@ input {
   transform:
     translate(-50%, -50%);
 
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 900;
 
   color: #aaa;
-
-  text-shadow:
-    0 0 5px #000;
 }
 
-@keyframes usedCard {
-  0% {
-    transform: scale(1.2);
-    opacity: 1;
-  }
 
-  100% {
-    transform: scale(.92);
-    opacity: .25;
-  }
-}
-
-/* ==========================
+/* =========================
    ルール
-========================== */
+========================= */
 
 .rule {
   color: #999;
@@ -431,193 +323,41 @@ input {
   background: #292b31;
 }
 
-/* ==========================
-   バトルカード
-========================== */
 
-.battle-card {
-  position: relative;
-  z-index: 5;
+/* =========================
+   勝敗オーバーレイ
+========================= */
+
+.battle-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0,0,0,.6);
+
+  z-index: 100;
 }
 
-.left-card {
-  transform:
-    translateX(-180px)
-    scale(.8);
+.battle-overlay.show {
+  display: flex;
 }
 
-.right-card {
-  transform:
-    translateX(180px)
-    scale(.8);
+#battleText {
+  font-size: clamp(45px, 12vw, 100px);
+  font-weight: 900;
+  font-style: italic;
+  text-align: center;
+  color: white;
 }
 
-/* ==========================
-   カード突進
-========================== */
 
-.attack-left {
-  animation:
-    attackLeft
-    .55s
-    cubic-bezier(.2, 1.5, .3, 1)
-    forwards;
-}
-
-.attack-right {
-  animation:
-    attackRight
-    .55s
-    cubic-bezier(.2, 1.5, .3, 1)
-    forwards;
-}
-
-@keyframes attackLeft {
-  0% {
-    transform:
-      translateX(-180px)
-      scale(.8)
-      rotate(-12deg);
-  }
-
-  100% {
-    transform:
-      translateX(55px)
-      scale(1.15)
-      rotate(0);
-  }
-}
-
-@keyframes attackRight {
-  0% {
-    transform:
-      translateX(180px)
-      scale(.8)
-      rotate(12deg);
-  }
-
-  100% {
-    transform:
-      translateX(-55px)
-      scale(1.15)
-      rotate(0);
-  }
-}
-
-/* ==========================
-   激突
-========================== */
-
-.impact {
-  animation:
-    impact
-    .35s
-    ease-out
-    forwards;
-}
-
-@keyframes impact {
-  0% {
-    transform: scale(1.15);
-  }
-
-  35% {
-    transform:
-      scale(1.35)
-      rotate(3deg);
-  }
-
-  60% {
-    transform:
-      scale(.95)
-      rotate(-3deg);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* ==========================
-   勝者
-========================== */
-
-.winner-card {
-  z-index: 10;
-
-  animation:
-    winnerFlash
-    .7s
-    ease-out,
-    winnerPulse
-    1s
-    .7s
-    infinite
-    alternate;
-
-  box-shadow:
-    0 0 15px #fff,
-    0 0 35px #fff,
-    0 0 70px #aaa;
-}
-
-@keyframes winnerFlash {
-  0% {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-
-  25% {
-    transform: scale(1.35);
-    filter: brightness(2);
-  }
-
-  50% {
-    transform: scale(1.15);
-    filter: brightness(1.5);
-  }
-
-  100% {
-    transform: scale(1.1);
-    filter: brightness(1);
-  }
-}
-
-@keyframes winnerPulse {
-  from {
-    box-shadow:
-      0 0 15px #fff,
-      0 0 35px #fff,
-      0 0 60px #aaa;
-  }
-
-  to {
-    box-shadow:
-      0 0 25px #fff,
-      0 0 55px #fff,
-      0 0 100px #aaa;
-  }
-}
-
-/* ==========================
-   敗者
-========================== */
-
-.loser-card {
-  opacity: .3;
-  filter: grayscale(1);
-
-  transform: scale(.85);
-
-  transition:
-    opacity .5s ease,
-    transform .5s ease,
-    filter .5s ease;
-}
-
-/* ==========================
+/* =========================
    爆発
-========================== */
+========================= */
 
 .particle {
   position: fixed;
@@ -629,7 +369,7 @@ input {
 
   background: white;
 
-  z-index: 20;
+  z-index: 200;
 
   pointer-events: none;
 
@@ -641,9 +381,10 @@ input {
 }
 
 @keyframes particleExplosion {
+
   0% {
     transform:
-      translate(0, 0)
+      translate(0,0)
       scale(1);
 
     opacity: 1;
@@ -651,194 +392,17 @@ input {
 
   100% {
     transform:
-      translate(var(--x), var(--y))
+      translate(var(--x),var(--y))
       scale(0);
 
     opacity: 0;
   }
 }
 
-/* ==========================
-   勝敗オーバーレイ
-========================== */
 
-.battle-overlay {
-  position: fixed;
-  inset: 0;
-
-  display: none;
-
-  align-items: center;
-  justify-content: center;
-
-  background: #0009;
-
-  z-index: 100;
-
-  pointer-events: none;
-}
-
-.battle-overlay.show {
-  display: flex;
-
-  animation:
-    battleFlash
-    .45s
-    ease-out;
-}
-
-#battleText {
-  font-size:
-    clamp(45px, 12vw, 100px);
-
-  font-weight: 1000;
-  font-style: italic;
-
-  letter-spacing: .06em;
-
-  text-align: center;
-
-  text-shadow:
-    0 0 10px #fff,
-    0 0 30px #fff,
-    0 0 70px #aaa;
-
-  animation:
-    resultAppear
-    .65s
-    cubic-bezier(.15, 1.5, .3, 1)
-    forwards;
-}
-
-@keyframes resultAppear {
-  0% {
-    opacity: 0;
-
-    transform:
-      scale(.2)
-      rotate(-8deg);
-  }
-
-  60% {
-    opacity: 1;
-
-    transform:
-      scale(1.2)
-      rotate(2deg);
-  }
-
-  80% {
-    transform:
-      scale(.95)
-      rotate(-1deg);
-  }
-
-  100% {
-    opacity: 1;
-
-    transform:
-      scale(1)
-      rotate(0);
-  }
-}
-
-@keyframes battleFlash {
-  0% {
-    opacity: 0;
-  }
-
-  35% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 1;
-  }
-}
-
-/* ==========================
-   ロゴアニメーション
-========================== */
-
-@keyframes logoNumber {
-  0% {
-    opacity: 0;
-
-    transform:
-      translateX(-100px)
-      scale(.6);
-  }
-
-  70% {
-    transform:
-      translateX(10px)
-      scale(1.08);
-  }
-
-  100% {
-    opacity: 1;
-
-    transform:
-      translateX(0)
-      scale(1);
-  }
-}
-
-@keyframes logoCross {
-  0% {
-    opacity: 0;
-
-    transform:
-      translateX(100px)
-      scale(.6);
-  }
-
-  70% {
-    transform:
-      translateX(-8px)
-      scale(1.08);
-  }
-
-  100% {
-    opacity: 1;
-
-    transform:
-      translateX(0)
-      scale(1);
-  }
-}
-
-@keyframes logoSub {
-  0%,
-  55% {
-    opacity: 0;
-
-    transform:
-      translateY(15px);
-  }
-
-  100% {
-    opacity: 1;
-
-    transform:
-      translateY(0);
-  }
-}
-
-@keyframes numberFloat {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-/* ==========================
+/* =========================
    スマホ
-========================== */
+========================= */
 
 @media (max-width: 600px) {
 
@@ -847,8 +411,7 @@ input {
   }
 
   .buttons {
-    grid-template-columns:
-      repeat(5, 1fr);
+    grid-template-columns: repeat(5, 1fr);
   }
 
   .card {
@@ -856,73 +419,4 @@ input {
     height: 110px;
   }
 
-  .left-card {
-    transform:
-      translateX(-80px)
-      scale(.7);
-  }
-
-  .right-card {
-    transform:
-      translateX(80px)
-      scale(.7);
-  }
-
-  @keyframes attackLeft {
-    0% {
-      transform:
-        translateX(-80px)
-        scale(.7);
-    }
-
-    100% {
-      transform:
-        translateX(30px)
-        scale(1);
-    }
-  }
-
-  @keyframes attackRight {
-    0% {
-      transform:
-        translateX(80px)
-        scale(.7);
-    }
-
-    100% {
-      transform:
-        translateX(-30px)
-        scale(1);
-    }
-  }
-
-  .winner-card {
-    animation:
-      winnerFlashMobile
-      .7s
-      ease-out,
-      winnerPulse
-      1s
-      .7s
-      infinite
-      alternate;
-  }
-
-  @keyframes winnerFlashMobile {
-    0% {
-      transform: scale(1);
-    }
-
-    30% {
-      transform: scale(1.2);
-    }
-
-    60% {
-      transform: scale(1.08);
-    }
-
-    100% {
-      transform: scale(1.05);
-    }
-  }
 }
