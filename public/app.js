@@ -383,10 +383,25 @@ function handle(m) {
     );
 
 
-    setTimeout(() => {
+   setTimeout(() => {
 
-  // 使用済み数字はリセットしない
-  // ゲーム終了まで表示を残す
+  // 使用済み数字は残す
+  // ただし次のラウンドでは1枚選べるようにする
+
+  selectedThisRound = false;
+
+  for (let n = 1; n <= 9; n++) {
+
+    const button = $("n" + n);
+
+    if (button) {
+
+      // すでに使った数字は押せない
+      // まだ使っていない数字だけ押せる
+      button.disabled =
+        button.classList.contains("used");
+    }
+  }
 
   $("p1card").className =
     "card hidden";
