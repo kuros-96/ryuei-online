@@ -3,7 +3,6 @@ let me = 0;
 
 const $ = id => document.getElementById(id);
 
-
 // ==========================
 // WebSocket接続
 // ==========================
@@ -16,27 +15,26 @@ function connect() {
       : "ws://") + location.host
   );
 
-
   ws.onopen = () => {
 
     $("status").textContent =
       "サーバー接続OK";
-  };
 
+  };
 
   ws.onclose = () => {
 
     $("status").textContent =
       "サーバーから切断されました";
-  };
 
+  };
 
   ws.onmessage = e => {
 
     handle(JSON.parse(e.data));
+
   };
 }
-
 
 // ==========================
 // データ送信
@@ -46,15 +44,15 @@ function send(data) {
 
   if (
     ws &&
-    ws.readyState === 1
+    ws.readyState === WebSocket.OPEN
   ) {
 
     ws.send(
       JSON.stringify(data)
     );
+
   }
 }
-
 
 // ==========================
 // プレイヤー名
@@ -66,8 +64,8 @@ function playerName() {
     $("name").value.trim()
     || "PLAYER"
   );
-}
 
+}
 
 // ==========================
 // ルーム作成
@@ -76,14 +74,11 @@ function playerName() {
 $("create").onclick = () => {
 
   send({
-
     type: "create",
-
     name: playerName()
-
   });
-};
 
+};
 
 // ==========================
 // ルーム参加
@@ -92,18 +87,12 @@ $("create").onclick = () => {
 $("join").onclick = () => {
 
   send({
-
     type: "join",
-
-    roomId:
-      $("room").value.trim(),
-
-    name:
-      playerName()
-
+    roomId: $("room").value.trim(),
+    name: playerName()
   });
-};
 
+};
 
 // ==========================
 // ロビーへ戻る
@@ -112,27 +101,20 @@ $("join").onclick = () => {
 $("back").onclick = () => {
 
   location.reload();
+
 };
 
-
 // ==========================
-// 残り数字
+// 残り数字を表示
 // ==========================
 
 function updateRemaining() {
 
   let used = 0;
 
+  for (let n = 1; n <= 9; n++) {
 
-  for (
-    let n = 1;
-    n <= 9;
-    n++
-  ) {
-
-    const button =
-      $("n" + n);
-
+    const button = $("n" + n);
 
     if (
       button &&
@@ -140,17 +122,14 @@ function updateRemaining() {
     ) {
 
       used++;
+
     }
+
   }
 
+  const remaining = 9 - used;
 
-  const remaining =
-    9 - used;
-
-
-  const display =
-    $("remaining");
-
+  const display = $("remaining");
 
   if (display) {
 
@@ -158,111 +137,117 @@ function updateRemaining() {
       "残り数字：" +
       remaining +
       "枚";
+
   }
+
 }
 
-
 // ==========================
-// このラウンドの選択状態
+// このラウンドで選択済みか
 // ==========================
 
 let selectedThisRound = false;
-
 
 // ==========================
 // 数字ボタン生成
 // ==========================
 
-for (
-  let n = 1;
-  n <= 9;
-  n++
-) {
+for (let n = 1; n <= 9; n++) {
 
   const button =
     document.createElement("button");
-
 
   button.textContent = n;
 
   button.id = "n" + n;
 
+  // ========================
+  // 数字クリック
+  // ========================
 
   button.onclick = () => {
 
-
-    // --------------------------
-    // すでに選択済み
-    // --------------------------
+    // ------------------------
+    // すでにこのラウンドで
+    // 選択済みなら何もしない
+    // ------------------------
 
     if (selectedThisRound) {
-
       return;
     }
 
+    // ------------------------
+    // 使用済みなら何もしない
+    // ------------------------
 
-    // --------------------------
-    // 選択状態
-    // --------------------------
+    if (button.classList.contains("used")) {
+      return;
+    }
+
+    // ------------------------
+    // このラウンドの選択済み
+    // ------------------------
 
     selectedThisRound = true;
 
+    // ------------------------
+    // ★ 選んだカードを青くする
+    // ------------------------
 
-    // ★ 今回選んだカードを青くする
+    button.classList.add("selected");
 
-button.classList.add("selected");
-
-
-    // --------------------------
+    // ------------------------
     // サーバーへ送信
-    // --------------------------
+    // ------------------------
 
     send({
-
       type: "move",
-
       number: n
-
     });
 
+    // ------------------------
+    // 残り数字表示
+    // ------------------------
 
     updateRemaining();
 
+    // ------------------------
+    // メッセージ
+    // ------------------------
 
     $("message").textContent =
       "NUMBER " +
       n +
       " を選択";
 
+    // ------------------------
+    // 他の数字を一時的に
+    // 押せなくする
+    // ------------------------
 
-    // --------------------------
-    // 他の数字をロック
-    // --------------------------
-
-    for (
-      let i = 1;
-      i <= 9;
-      i++
-    ) {
+    for (let i = 1; i <= 9; i++) {
 
       const otherButton =
         $("n" + i);
 
-
       if (otherButton) {
 
-        otherButton.disabled =
-          true;
+        // 選んだ数字以外をロック
+        if (otherButton !== button) {
+
+          otherButton.disabled = true;
+
+        }
+
       }
+
     }
+
   };
 
+  $("buttons").appendChild(button);
 
-  $("buttons").appendChild(
-    button
-  );
 }
-
 
 // ==========================
 // 爆発エフェクト
@@ -270,19 +255,13 @@ button.classList.add("selected");
 
 function explosion() {
 
-  for (
-    let i = 0;
-    i < 30;
-    i++
-  ) {
+  for (let i = 0; i < 30; i++) {
 
     const particle =
       document.createElement("div");
 
-
     particle.className =
       "particle";
-
 
     particle.style.left =
       "50%";
@@ -290,80 +269,72 @@ function explosion() {
     particle.style.top =
       "50%";
 
-
     particle.style.setProperty(
       "--x",
-      (Math.random() * 400 - 200)
-      + "px"
+      (Math.random() * 400 - 200) +
+      "px"
     );
-
 
     particle.style.setProperty(
       "--y",
-      (Math.random() * 300 - 150)
-      + "px"
+      (Math.random() * 300 - 150) +
+      "px"
     );
-
 
     document.body.appendChild(
       particle
     );
-
 
     setTimeout(() => {
 
       particle.remove();
 
     }, 800);
-  }
-}
 
+  }
+
+}
 
 // ==========================
 // 勝敗表示
 // ==========================
 
-function showResult(
-  text,
-  win
-) {
+function showResult(text, win) {
 
   const overlay =
     $("battleOverlay");
 
-
   if (!overlay) {
 
-    $("message")
-      .textContent = text;
+    $("message").textContent =
+      text;
 
     return;
-  }
 
+  }
 
   const battleText =
     $("battleText");
 
-
   if (!battleText) {
 
-    $("message")
-      .textContent = text;
+    $("message").textContent =
+      text;
 
     return;
-  }
 
+  }
 
   battleText.textContent =
     text;
 
-
   overlay.className =
     "battle-overlay show " +
-    (win
-      ? "victory"
-      : "defeat");
-
+    (
+      win
+        ? "victory"
+        : "defeat"
+    );
 
   setTimeout(() => {
 
@@ -371,8 +342,8 @@ function showResult(
       "battle-overlay";
 
   }, 1200);
-}
 
+}
 
 // ==========================
 // バトル演出
@@ -390,18 +361,15 @@ function battleAnimation(
   const right =
     $("p2card");
 
-
-  // --------------------------
+  // ------------------------
   // カード表示
-  // --------------------------
+  // ------------------------
 
   left.className =
     "card battle-card left-card";
 
-
   right.className =
     "card battle-card right-card";
-
 
   left.textContent =
     p1;
@@ -409,10 +377,9 @@ function battleAnimation(
   right.textContent =
     p2;
 
-
-  // --------------------------
+  // ------------------------
   // 突進
-  // --------------------------
+  // ------------------------
 
   setTimeout(() => {
 
@@ -426,10 +393,9 @@ function battleAnimation(
 
   }, 100);
 
-
-  // --------------------------
+  // ------------------------
   // 激突
-  // --------------------------
+  // ------------------------
 
   setTimeout(() => {
 
@@ -441,15 +407,13 @@ function battleAnimation(
       "impact"
     );
 
-
     explosion();
 
   }, 650);
 
-
-  // --------------------------
+  // ------------------------
   // 間
-  // --------------------------
+  // ------------------------
 
   setTimeout(() => {
 
@@ -458,7 +422,6 @@ function battleAnimation(
 
   }, 1000);
 
-
   setTimeout(() => {
 
     $("message").textContent =
@@ -466,21 +429,23 @@ function battleAnimation(
 
   }, 1400);
 
-
-  // --------------------------
+  // ------------------------
   // 勝敗
-  // --------------------------
+  // ------------------------
 
   setTimeout(() => {
 
     const win =
       result ===
-      (me === 1 ? 1 : -1);
+      (
+        me === 1
+          ? 1
+          : -1
+      );
 
-
-    // --------------------------
-    // 勝者
-    // --------------------------
+    // ----------------------
+    // プレイヤー1勝利
+    // ----------------------
 
     if (result === 1) {
 
@@ -494,10 +459,9 @@ function battleAnimation(
 
     }
 
-
-    // --------------------------
-    // 敗者
-    // --------------------------
+    // ----------------------
+    // プレイヤー2勝利
+    // ----------------------
 
     else if (result === -1) {
 
@@ -511,10 +475,9 @@ function battleAnimation(
 
     }
 
-
-    // --------------------------
+    // ----------------------
     // 引き分け
-    // --------------------------
+    // ----------------------
 
     if (result === 0) {
 
@@ -523,17 +486,16 @@ function battleAnimation(
         false
       );
 
-
       $("message").textContent =
         "引き分け！";
 
       return;
+
     }
 
-
-    // --------------------------
-    // 結果
-    // --------------------------
+    // ----------------------
+    // 結果表示
+    // ----------------------
 
     showResult(
       win
@@ -542,141 +504,154 @@ function battleAnimation(
       win
     );
 
-
     $("message").textContent =
       win
         ? "あなたの勝ち！"
         : "あなたの負け…";
 
   }, 1900);
+
 }
 
-
 // ==========================
-// サーバーからのデータ
+// サーバーからのデータ処理
 // ==========================
 
 function handle(m) {
 
-
-  // ==========================
+  // ========================
   // エラー
-  // ==========================
+  // ========================
 
-  if (
-    m.type === "error"
-  ) {
+  if (m.type === "error") {
 
     alert(m.message);
 
     return;
+
   }
 
-
-  // ==========================
+  // ========================
   // 参加成功
-  // ==========================
+  // ========================
 
-  if (
-    m.type === "joined"
-  ) {
+  if (m.type === "joined") {
 
     me =
       m.player;
 
-
     $("roomId").textContent =
       m.roomId;
-
 
     $("lobby")
       .classList
       .add("hidden");
 
-
     $("game")
       .classList
       .remove("hidden");
 
+    // ----------------------
+    // 新しいゲームなので
+    // ボタン状態をリセット
+    // ----------------------
+
+    selectedThisRound = false;
+
+    for (let n = 1; n <= 9; n++) {
+
+      const button =
+        $("n" + n);
+
+      if (button) {
+
+        button.classList.remove(
+          "selected"
+        );
+
+        button.classList.remove(
+          "used"
+        );
+
+        button.disabled = false;
+
+      }
+
+    }
 
     updateRemaining();
-
 
     $("message").textContent =
       me === 1
         ? "相手の参加を待っています…"
         : "ゲーム開始！";
 
-
     return;
+
   }
 
-
-  // ==========================
+  // ========================
   // ゲーム状態
-  // ==========================
+  // ========================
 
-  if (
-    m.type === "state"
-  ) {
+  if (m.type === "state") {
 
     $("round").textContent =
       m.round;
-
 
     $("scores").textContent =
       m.p1Score +
       " - " +
       m.p2Score;
 
-
     $("p1state").textContent =
       m.p1Connected
         ? "接続中"
         : "待機中";
-
 
     $("p2state").textContent =
       m.p2Connected
         ? "接続中"
         : "待機中";
 
-
     if (
       m.status === "playing"
     ) {
 
-      $("message").textContent =
-        "数字を1枚選んでください";
+      // まだ選んでいない場合だけ
+      // 選択メッセージを表示
+
+      if (!selectedThisRound) {
+
+        $("message").textContent =
+          "数字を1枚選んでください";
+
+      }
+
     }
 
-
     return;
+
   }
 
-
-  // ==========================
+  // ========================
   // 待機
-  // ==========================
+  // ========================
 
-  if (
-    m.type === "waiting"
-  ) {
+  if (m.type === "waiting") {
 
     $("message").textContent =
       "相手の選択を待っています…";
 
     return;
+
   }
 
-
-  // ==========================
+  // ========================
   // ラウンド結果
-  // ==========================
+  // ========================
 
-  if (
-    m.type === "roundResult"
-  ) {
+  if (m.type === "roundResult") {
 
     battleAnimation(
       m.p1,
@@ -684,74 +659,96 @@ function handle(m) {
       m.result
     );
 
+    // ----------------------
+    // バトル演出終了後
+    // 次ラウンドへ
+    // ----------------------
 
     setTimeout(() => {
 
+      // --------------------
+      // 選択状態をリセット
+      // --------------------
 
-      // --------------------------
-      // 次ラウンド
-      // --------------------------
+      selectedThisRound = false;
 
-      selectedThisRound =
-        false;
+      // --------------------
+      // ボタン状態
+      // --------------------
 
-
-      for (
-        let n = 1;
-        n <= 9;
-        n++
-      ) {
+      for (let n = 1; n <= 9; n++) {
 
         const button =
           $("n" + n);
 
-
         if (button) {
 
+          // ----------------
+          // ★ 今回選んだ数字
+          // 使用済みにする
+          // ----------------
 
-          // ★ 青色を解除
+          if (
+            button.classList.contains(
+              "selected"
+            )
+          ) {
 
-if (button.classList.contains("selected")) {
-  button.classList.remove("selected");
-  button.classList.add("used");
-}
+            button.classList.remove(
+              "selected"
+            );
 
-button.disabled =
-  button.classList.contains("used");
+            button.classList.add(
+              "used"
+            );
+
+          }
+
+          // ----------------
+          // 使用済みはロック
+          // 未使用は次ラウンドで
+          // 選択可能
+          // ----------------
+
+          button.disabled =
+            button.classList.contains(
+              "used"
+            );
+
         }
+
       }
 
+      // --------------------
+      // 残り数字を更新
+      // --------------------
 
-      // --------------------------
+      updateRemaining();
+
+      // --------------------
       // バトルカードを隠す
-      // --------------------------
+      // --------------------
 
       $("p1card").className =
         "card hidden";
 
-
       $("p2card").className =
         "card hidden";
 
-
     }, 2800);
 
-
     return;
+
   }
 
-
-  // ==========================
+  // ========================
   // ゲーム終了
-  // ==========================
+  // ========================
 
-  if (
-    m.type === "gameOver"
-  ) {
+  if (m.type === "gameOver") {
 
     const win =
       m.winner === me;
-
 
     showResult(
 
@@ -762,8 +759,8 @@ button.disabled =
           : "DEFEAT",
 
       win
-    );
 
+    );
 
     $("message").textContent =
 
@@ -773,14 +770,13 @@ button.disabled =
           ? "あなたの勝利！"
           : "あなたの敗北…";
 
-
     return;
+
   }
 
-
-  // ==========================
+  // ========================
   // 相手退出
-  // ==========================
+  // ========================
 
   if (
     m.type === "opponentLeft"
@@ -790,9 +786,10 @@ button.disabled =
       "相手が退出しました。";
 
     return;
-  }
-}
 
+  }
+
+}
 
 // ==========================
 // 起動
