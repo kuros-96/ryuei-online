@@ -227,6 +227,7 @@ function battleAnimation(p1, p2, result) {
   const left = $("p1card");
   const right = $("p2card");
 
+  // カード表示
   left.className =
     "card battle-card left-card";
 
@@ -237,7 +238,10 @@ function battleAnimation(p1, p2, result) {
   right.textContent = p2;
 
 
-  // 中央へ移動
+  // ==========================
+  // カード突進
+  // ==========================
+
   setTimeout(() => {
 
     left.classList.add("attack-left");
@@ -246,7 +250,10 @@ function battleAnimation(p1, p2, result) {
   }, 100);
 
 
+  // ==========================
   // 激突
+  // ==========================
+
   setTimeout(() => {
 
     left.classList.add("impact");
@@ -257,43 +264,79 @@ function battleAnimation(p1, p2, result) {
   }, 650);
 
 
- // ==========================
-// 勝敗
-// ==========================
+  // ==========================
+  // 結果発表まで「間」を作る
+  // ==========================
 
-setTimeout(() => {
+  setTimeout(() => {
 
-  const win =
-    result === (me === 1 ? 1 : -1);
+    $("message").textContent =
+      "……";
 
-
-  if (result === 1) {
-
-    left.classList.add("winner-card");
-    right.classList.add("loser-card");
-
-  } else if (result === -1) {
-
-    right.classList.add("winner-card");
-    left.classList.add("loser-card");
-
-  }
+  }, 1000);
 
 
-  showResult(
-    win ? "YOU WIN!" : "YOU LOSE!",
-    win
-  );
+  setTimeout(() => {
+
+    $("message").textContent =
+      "勝敗は……";
+
+  }, 1400);
 
 
-  $("message").textContent =
-    win
-      ? "あなたの勝ち！"
-      : "あなたの負け…";
+  // ==========================
+  // 勝敗発表
+  // ==========================
 
-}, 900);
+  setTimeout(() => {
+
+    const win =
+      result === (me === 1 ? 1 : -1);
+
+
+    // 勝者・敗者カード
+    if (result === 1) {
+
+      left.classList.add("winner-card");
+      right.classList.add("loser-card");
+
+    } else if (result === -1) {
+
+      right.classList.add("winner-card");
+      left.classList.add("loser-card");
+
+    }
+
+
+    // 引き分け
+    if (result === 0) {
+
+      showResult(
+        "DRAW!",
+        false
+      );
+
+      $("message").textContent =
+        "引き分け！";
+
+      return;
+    }
+
+
+    // 勝敗表示
+    showResult(
+      win ? "YOU WIN!" : "YOU LOSE!",
+      win
+    );
+
+
+    $("message").textContent =
+      win
+        ? "あなたの勝ち！"
+        : "あなたの負け…";
+
+  }, 1900);
 }
-
 
 // ==========================
 // サーバーからのデータ処理
@@ -409,7 +452,7 @@ function handle(m) {
   $("p2card").className =
     "card hidden";
 
-}, 1500);
+}, 2800);
 
     return;
   }
