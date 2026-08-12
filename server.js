@@ -24,13 +24,34 @@ function result(a, b) {
 function publicState(room) {
   return {
     type: "state",
+
     roomId: room.id,
-    status: room.players.length === 2 ? "playing" : "waiting",
+
+    status:
+      room.players.length === 2
+        ? "playing"
+        : "waiting",
+
     round: room.round,
-    p1Score: room.players[0]?.score ?? 0,
-    p2Score: room.players[1]?.score ?? 0,
-    p1Connected: !!room.players[0],
-    p2Connected: !!room.players[1]
+
+    p1Score:
+      room.players[0]?.score ?? 0,
+
+    p2Score:
+      room.players[1]?.score ?? 0,
+
+    p1Connected:
+      !!room.players[0],
+
+    p2Connected:
+      !!room.players[1],
+
+    // プレイヤー名
+    p1Name:
+      room.players[0]?.name ?? "PLAYER 1",
+
+    p2Name:
+      room.players[1]?.name ?? "PLAYER 2"
   };
 }
 function makeRoom() {
