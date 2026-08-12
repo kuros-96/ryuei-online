@@ -1,21 +1,7 @@
-// ========================================
-// NUMBER CROSS
-// app.js 完全版
-// ========================================
-
 let ws = null;
 let me = 0;
 
-let selectedThisRound = false;
-
-
-// ========================================
-// ID取得
-// ========================================
-
-function $(id) {
-  return document.getElementById(id);
-}
+const $ = id => document.getElementById(id);
 
 
 // ========================================
@@ -24,14 +10,17 @@ function $(id) {
 
 function connect() {
 
+  const protocol =
+    location.protocol === "https:"
+      ? "wss:"
+      : "ws:";
+
   ws = new WebSocket(
-    (location.protocol === "https:"
-      ? "wss://"
-      : "ws://") + location.host
+    protocol + "//" + location.host
   );
 
 
-  ws.onopen = function () {
+  ws.onopen = () => {
 
     const status = $("status");
 
@@ -39,11 +28,10 @@ function connect() {
       status.textContent =
         "サーバー接続OK";
     }
-
   };
 
 
-  ws.onclose = function () {
+  ws.onclose = () => {
 
     const status = $("status");
 
@@ -51,11 +39,10 @@ function connect() {
       status.textContent =
         "サーバーから切断されました";
     }
-
   };
 
 
-  ws.onerror = function () {
+  ws.onerror = () => {
 
     const status = $("status");
 
@@ -63,30 +50,26 @@ function connect() {
       status.textContent =
         "サーバー接続エラー";
     }
-
   };
 
 
-  ws.onmessage = function (event) {
+  ws.onmessage = event => {
 
     try {
 
-      const data =
+      const message =
         JSON.parse(event.data);
 
-      handle(data);
+      handle(message);
 
     } catch (error) {
 
       console.error(
-        "データ処理エラー:",
+        "受信データエラー:",
         error
       );
-
     }
-
   };
-
 }
 
 
@@ -104,9 +87,7 @@ function send(data) {
     ws.send(
       JSON.stringify(data)
     );
-
   }
-
 }
 
 
@@ -116,17 +97,66 @@ function send(data) {
 
 function playerName() {
 
-  const name = $("name");
+  const input = $("name");
 
-  if (!name) {
+  if (!input) {
     return "PLAYER";
   }
 
   return (
-    name.value.trim() ||
+    input.value.trim() ||
     "PLAYER"
   );
+}
 
+
+// ========================================
+// ルーム作成
+// ========================================
+
+function createRoom() {
+
+  send({
+
+    type: "create",
+
+    name:
+      playerName()
+  });
+}
+
+
+// ========================================
+// ルーム参加
+// ========================================
+
+function joinRoom() {
+
+  const roomInput =
+    $("room");
+
+  send({
+
+    type: "join",
+
+    roomId:
+      roomInput
+        ? roomInput.value.trim()
+        : "",
+
+    name:
+      playerName()
+  });
+}
+
+
+// ========================================
+// ロビーへ戻る
+// ========================================
+
+function backToLobby() {
+
+  location.reload();
 }
 
 
@@ -148,31 +178,41 @@ function updateRemaining() {
     const button =
       $("n" + n);
 
+
     if (
       button &&
       button.classList.contains("used")
     ) {
 
       used++;
-
     }
-
   }
+
+
+  const remaining =
+    9 - used;
 
 
   const display =
     $("remaining");
 
+
   if (display) {
 
     display.textContent =
       "残り数字：" +
-      (9 - used) +
+      remaining +
       "枚";
-
   }
-
 }
+
+
+// ========================================
+// ラウンド選択状態
+// ========================================
+
+let selectedThisRound =
+  false;
 
 
 // ========================================
@@ -186,16 +226,11 @@ function createNumberButtons() {
 
 
   if (!container) {
-
-    console.error(
-      "#buttons がありません"
-    );
-
     return;
-
   }
 
 
+  // 二重生成防止
   container.innerHTML = "";
 
 
@@ -206,8 +241,12 @@ function createNumberButtons() {
   ) {
 
     const button =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
+
+    button.textContent = n;
 
     button.id =
       "n" + n;
@@ -217,80 +256,70 @@ function createNumberButtons() {
       "button";
 
 
-    button.textContent =
-      n;
+    button.onclick = () => {
 
-
-    // ==================================
-    // 数字クリック
-    // ==================================
-
-    button.onclick = function () {
-
-
-      // ------------------------------
-      // すでにこのラウンドで選択済み
-      // ------------------------------
-
-      if (selectedThisRound) {
-
-        return;
-
-      }
-
-
-      // ------------------------------
-      // すでに使用済み
-      // ------------------------------
+      // --------------------------------
+      // すでに選択済み
+      // --------------------------------
 
       if (
-        button.classList.contains("used")
+        selectedThisRound
       ) {
 
         return;
-
       }
 
 
-      // ------------------------------
-      // このラウンドの選択完了
-      // ------------------------------
+      // --------------------------------
+      // 使用済みなら選択不可
+      // --------------------------------
+
+      if (
+        button.classList.contains(
+          "used"
+        )
+      ) {
+
+        return;
+      }
+
+
+      // --------------------------------
+      // このラウンドの選択状態
+      // --------------------------------
 
       selectedThisRound =
         true;
 
 
-      // ==================================
-      // ★★★ 青く光らせる ★★★
-      // ==================================
+      // --------------------------------
+      // ★ 選択中は青く光る
+      // --------------------------------
 
       button.classList.add(
         "selected"
       );
 
 
-      // ★★★ ここでは used を付けない ★★★
-
-
-      // ==================================
+      // --------------------------------
       // サーバーへ送信
-      // ==================================
+      // --------------------------------
 
       send({
 
         type: "move",
 
         number: n
-
       });
 
 
-      // ==================================
+      // --------------------------------
       // メッセージ
-      // ==================================
+      // --------------------------------
 
       const message =
         $("message");
+
 
       if (message) {
 
@@ -298,13 +327,12 @@ function createNumberButtons() {
           "NUMBER " +
           n +
           " を選択";
-
       }
 
 
-      // ==================================
-      // 他のカードを一時ロック
-      // ==================================
+      // --------------------------------
+      // 他の数字をロック
+      // --------------------------------
 
       for (
         let i = 1;
@@ -316,136 +344,27 @@ function createNumberButtons() {
           $("n" + i);
 
 
-        if (!other) {
-          continue;
+        if (other) {
+
+          other.disabled =
+            true;
         }
-
-
-        // 選択したカードもロック
-        // 使用済みではない
-
-        other.disabled =
-          true;
-
       }
-
     };
 
 
     container.appendChild(
       button
     );
-
-  }
-
-}
-
-
-// ========================================
-// ★ ラウンド終了処理
-// ========================================
-
-function finishRound() {
-
-  // ======================================
-  // 選択されたカードを探す
-  // ======================================
-
-  for (
-    let n = 1;
-    n <= 9;
-    n++
-  ) {
-
-    const button =
-      $("n" + n);
-
-
-    if (!button) {
-      continue;
-    }
-
-
-    // ====================================
-    // 今ラウンドで選択されたカード
-    // ====================================
-
-    if (
-      button.classList.contains("selected")
-    ) {
-
-      // 青色を解除
-      button.classList.remove(
-        "selected"
-      );
-
-
-      // ★★★ ここで初めて used ★★★
-      button.classList.add(
-        "used"
-      );
-
-
-      // 使用済みなのでロック
-      button.disabled =
-        true;
-
-    }
-
-  }
-
-
-  // ======================================
-  // 次ラウンド開始
-  // ======================================
-
-  selectedThisRound =
-    false;
-
-
-  // ======================================
-  // 未使用カードだけ使用可能
-  // ======================================
-
-  for (
-    let n = 1;
-    n <= 9;
-    n++
-  ) {
-
-    const button =
-      $("n" + n);
-
-
-    if (!button) {
-      continue;
-    }
-
-
-    if (
-      button.classList.contains("used")
-    ) {
-
-      button.disabled =
-        true;
-
-    } else {
-
-      button.disabled =
-        false;
-
-    }
-
   }
 
 
   updateRemaining();
-
 }
 
 
 // ========================================
-// 爆発
+// 爆発エフェクト
 // ========================================
 
 function explosion() {
@@ -457,7 +376,9 @@ function explosion() {
   ) {
 
     const particle =
-      document.createElement("div");
+      document.createElement(
+        "div"
+      );
 
 
     particle.className =
@@ -473,15 +394,19 @@ function explosion() {
 
     particle.style.setProperty(
       "--x",
-      (Math.random() * 400 - 200) +
-      "px"
+      (
+        Math.random() * 400 -
+        200
+      ) + "px"
     );
 
 
     particle.style.setProperty(
       "--y",
-      (Math.random() * 300 - 150) +
-      "px"
+      (
+        Math.random() * 300 -
+        150
+      ) + "px"
     );
 
 
@@ -491,21 +416,19 @@ function explosion() {
 
 
     setTimeout(
-      function () {
+      () => {
 
         particle.remove();
 
       },
       900
     );
-
   }
-
 }
 
 
 // ========================================
-// 勝敗表示
+// 勝敗オーバーレイ
 // ========================================
 
 function showResult(
@@ -515,6 +438,7 @@ function showResult(
 
   const overlay =
     $("battleOverlay");
+
 
   const battleText =
     $("battleText");
@@ -532,11 +456,9 @@ function showResult(
 
       message.textContent =
         text;
-
     }
 
     return;
-
   }
 
 
@@ -554,15 +476,14 @@ function showResult(
 
 
   setTimeout(
-    function () {
+    () => {
 
       overlay.className =
         "battle-overlay";
 
     },
-    1500
+    1200
   );
-
 }
 
 
@@ -589,11 +510,12 @@ function battleAnimation(
   ) {
 
     return;
-
   }
 
 
+  // --------------------------------
   // カード表示
+  // --------------------------------
 
   left.className =
     "card battle-card left-card";
@@ -609,10 +531,12 @@ function battleAnimation(
     p2;
 
 
+  // --------------------------------
   // 突進
+  // --------------------------------
 
   setTimeout(
-    function () {
+    () => {
 
       left.classList.add(
         "attack-left"
@@ -627,10 +551,12 @@ function battleAnimation(
   );
 
 
+  // --------------------------------
   // 激突
+  // --------------------------------
 
   setTimeout(
-    function () {
+    () => {
 
       left.classList.add(
         "impact"
@@ -648,10 +574,12 @@ function battleAnimation(
   );
 
 
+  // --------------------------------
   // 間
+  // --------------------------------
 
   setTimeout(
-    function () {
+    () => {
 
       const message =
         $("message");
@@ -660,7 +588,6 @@ function battleAnimation(
 
         message.textContent =
           "……";
-
       }
 
     },
@@ -669,7 +596,7 @@ function battleAnimation(
 
 
   setTimeout(
-    function () {
+    () => {
 
       const message =
         $("message");
@@ -678,7 +605,6 @@ function battleAnimation(
 
         message.textContent =
           "勝敗は……";
-
       }
 
     },
@@ -686,10 +612,12 @@ function battleAnimation(
   );
 
 
+  // --------------------------------
   // 勝敗
+  // --------------------------------
 
   setTimeout(
-    function () {
+    () => {
 
       const win =
         result ===
@@ -700,7 +628,13 @@ function battleAnimation(
         );
 
 
-      if (result === 1) {
+      // ------------------------------
+      // P1勝利
+      // ------------------------------
+
+      if (
+        result === 1
+      ) {
 
         left.classList.add(
           "winner-card"
@@ -709,11 +643,16 @@ function battleAnimation(
         right.classList.add(
           "loser-card"
         );
-
       }
 
 
-      if (result === -1) {
+      // ------------------------------
+      // P2勝利
+      // ------------------------------
+
+      else if (
+        result === -1
+      ) {
 
         right.classList.add(
           "winner-card"
@@ -722,11 +661,16 @@ function battleAnimation(
         left.classList.add(
           "loser-card"
         );
-
       }
 
 
-      if (result === 0) {
+      // ------------------------------
+      // 引き分け
+      // ------------------------------
+
+      if (
+        result === 0
+      ) {
 
         showResult(
           "DRAW!",
@@ -737,17 +681,21 @@ function battleAnimation(
         const message =
           $("message");
 
+
         if (message) {
 
           message.textContent =
             "引き分け！";
-
         }
 
-        return;
 
+        return;
       }
 
+
+      // ------------------------------
+      // 勝敗表示
+      // ------------------------------
 
       showResult(
         win
@@ -760,19 +708,108 @@ function battleAnimation(
       const message =
         $("message");
 
+
       if (message) {
 
         message.textContent =
           win
             ? "あなたの勝ち！"
             : "あなたの負け…";
-
       }
 
     },
     1900
   );
+}
 
+
+// ========================================
+// 次ラウンド準備
+// ========================================
+
+function prepareNextRound() {
+
+  selectedThisRound =
+    false;
+
+
+  for (
+    let n = 1;
+    n <= 9;
+    n++
+  ) {
+
+    const button =
+      $("n" + n);
+
+
+    if (!button) {
+      continue;
+    }
+
+
+    // --------------------------------
+    // ★ 青色を解除
+    // --------------------------------
+
+    button.classList.remove(
+      "selected"
+    );
+
+
+    // --------------------------------
+    // 使用済み数字
+    // --------------------------------
+
+    if (
+      button.classList.contains(
+        "used"
+      )
+    ) {
+
+      button.disabled =
+        true;
+
+    } else {
+
+      button.disabled =
+        false;
+    }
+  }
+
+
+  updateRemaining();
+
+
+  // --------------------------------
+  // バトルカードを隠す
+  // --------------------------------
+
+  const p1card =
+    $("p1card");
+
+  const p2card =
+    $("p2card");
+
+
+  if (p1card) {
+
+    p1card.className =
+      "card hidden";
+
+    p1card.textContent =
+      "？";
+  }
+
+
+  if (p2card) {
+
+    p2card.className =
+      "card hidden";
+
+    p2card.textContent =
+      "？";
+  }
 }
 
 
@@ -781,11 +818,6 @@ function battleAnimation(
 // ========================================
 
 function handle(m) {
-
-  if (!m) {
-    return;
-  }
-
 
   // ======================================
   // エラー
@@ -796,12 +828,10 @@ function handle(m) {
   ) {
 
     alert(
-      m.message ||
-      "エラーが発生しました"
+      m.message
     );
 
     return;
-
   }
 
 
@@ -820,11 +850,48 @@ function handle(m) {
     const roomId =
       $("roomId");
 
+
     if (roomId) {
 
       roomId.textContent =
         m.roomId;
+    }
 
+
+    // ------------------------------------
+    // 自分の名前
+    // ------------------------------------
+
+    if (
+      m.name
+    ) {
+
+      if (
+        me === 1
+      ) {
+
+        const p1name =
+          $("p1name");
+
+
+        if (p1name) {
+
+          p1name.textContent =
+            m.name;
+        }
+
+      } else {
+
+        const p2name =
+          $("p2name");
+
+
+        if (p2name) {
+
+          p2name.textContent =
+            m.name;
+        }
+      }
     }
 
 
@@ -840,7 +907,6 @@ function handle(m) {
       lobby.classList.add(
         "hidden"
       );
-
     }
 
 
@@ -849,14 +915,7 @@ function handle(m) {
       game.classList.remove(
         "hidden"
       );
-
     }
-
-
-    // 新しいゲーム
-
-    selectedThisRound =
-      false;
 
 
     updateRemaining();
@@ -865,18 +924,17 @@ function handle(m) {
     const message =
       $("message");
 
+
     if (message) {
 
       message.textContent =
         me === 1
           ? "相手の参加を待っています…"
           : "ゲーム開始！";
-
     }
 
 
     return;
-
   }
 
 
@@ -891,16 +949,17 @@ function handle(m) {
     const round =
       $("round");
 
+
     if (round) {
 
       round.textContent =
         m.round;
-
     }
 
 
     const scores =
       $("scores");
+
 
     if (scores) {
 
@@ -908,12 +967,12 @@ function handle(m) {
         m.p1Score +
         " - " +
         m.p2Score;
-
     }
 
 
     const p1state =
       $("p1state");
+
 
     if (p1state) {
 
@@ -921,12 +980,12 @@ function handle(m) {
         m.p1Connected
           ? "接続中"
           : "待機中";
-
     }
 
 
     const p2state =
       $("p2state");
+
 
     if (p2state) {
 
@@ -934,9 +993,40 @@ function handle(m) {
         m.p2Connected
           ? "接続中"
           : "待機中";
-
     }
 
+
+    // ====================================
+    // ★ プレイヤー名
+    // ====================================
+
+    const p1name =
+      $("p1name");
+
+
+    if (p1name) {
+
+      p1name.textContent =
+        m.p1Name ||
+        "PLAYER 1";
+    }
+
+
+    const p2name =
+      $("p2name");
+
+
+    if (p2name) {
+
+      p2name.textContent =
+        m.p2Name ||
+        "PLAYER 2";
+    }
+
+
+    // ====================================
+    // ゲーム中
+    // ====================================
 
     if (
       m.status === "playing" &&
@@ -946,18 +1036,16 @@ function handle(m) {
       const message =
         $("message");
 
+
       if (message) {
 
         message.textContent =
           "数字を1枚選んでください";
-
       }
-
     }
 
 
     return;
-
   }
 
 
@@ -972,15 +1060,15 @@ function handle(m) {
     const message =
       $("message");
 
+
     if (message) {
 
       message.textContent =
         "相手の選択を待っています…";
-
     }
 
-    return;
 
+    return;
   }
 
 
@@ -999,45 +1087,10 @@ function handle(m) {
     );
 
 
-    // ==================================
-    // ★ バトル終了後に使用済みにする
-    // ==================================
-
     setTimeout(
-      function () {
+      () => {
 
-        finishRound();
-
-
-        // カードを隠す
-
-        const p1card =
-          $("p1card");
-
-        const p2card =
-          $("p2card");
-
-
-        if (p1card) {
-
-          p1card.className =
-            "card hidden";
-
-          p1card.textContent =
-            "？";
-
-        }
-
-
-        if (p2card) {
-
-          p2card.className =
-            "card hidden";
-
-          p2card.textContent =
-            "？";
-
-        }
+        prepareNextRound();
 
       },
       2800
@@ -1045,7 +1098,6 @@ function handle(m) {
 
 
     return;
-
   }
 
 
@@ -1070,12 +1122,12 @@ function handle(m) {
           : "DEFEAT",
 
       win
-
     );
 
 
     const message =
       $("message");
+
 
     if (message) {
 
@@ -1086,12 +1138,10 @@ function handle(m) {
           : win
             ? "あなたの勝利！"
             : "あなたの敗北…";
-
     }
 
 
     return;
-
   }
 
 
@@ -1106,105 +1156,96 @@ function handle(m) {
     const message =
       $("message");
 
+
     if (message) {
 
       message.textContent =
         "相手が退出しました。";
-
     }
 
+
+    return;
   }
 
+
+  // ======================================
+  // サーバーメッセージ
+  // ======================================
+
+  if (
+    m.type === "message"
+  ) {
+
+    const message =
+      $("message");
+
+
+    if (
+      message &&
+      m.text
+    ) {
+
+      message.textContent =
+        m.text;
+    }
+
+
+    return;
+  }
 }
 
 
 // ========================================
-// ページ読み込み完了
+// ボタン設定
+// ========================================
+
+function setupUI() {
+
+  const create =
+    $("create");
+
+
+  if (create) {
+
+    create.onclick =
+      createRoom;
+  }
+
+
+  const join =
+    $("join");
+
+
+  if (join) {
+
+    join.onclick =
+      joinRoom;
+  }
+
+
+  const back =
+    $("back");
+
+
+  if (back) {
+
+    back.onclick =
+      backToLobby;
+  }
+}
+
+
+// ========================================
+// 起動
 // ========================================
 
 document.addEventListener(
   "DOMContentLoaded",
-  function () {
+  () => {
 
-    // 数字ボタン作成
+    setupUI();
+
     createNumberButtons();
-
-
-    // ルーム作成
-
-    const create =
-      $("create");
-
-    if (create) {
-
-      create.onclick =
-        function () {
-
-          send({
-
-            type: "create",
-
-            name:
-              playerName()
-
-          });
-
-        };
-
-    }
-
-
-    // ルーム参加
-
-    const join =
-      $("join");
-
-    if (join) {
-
-      join.onclick =
-        function () {
-
-          const room =
-            $("room");
-
-
-          send({
-
-            type: "join",
-
-            roomId:
-              room
-                ? room.value.trim()
-                : "",
-
-            name:
-              playerName()
-
-          });
-
-        };
-
-    }
-
-
-    // 戻る
-
-    const back =
-      $("back");
-
-    if (back) {
-
-      back.onclick =
-        function () {
-
-          location.reload();
-
-        };
-
-    }
-
-
-    // WebSocket開始
 
     connect();
 
