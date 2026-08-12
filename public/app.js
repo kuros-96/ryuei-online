@@ -233,40 +233,11 @@ function battleAnimation(p1, p2, result) {
   }, 650);
 
 
-  // ==========================
-// 勝敗発表まで焦らす
+ // ==========================
+// 勝敗
 // ==========================
 
-// 激突後：まだ結果を見せない
 setTimeout(() => {
-
-  $("message").textContent =
-    "……";
-
-}, 900);
-
-
-// さらに少し溜める
-setTimeout(() => {
-
-  $("message").textContent =
-    "勝敗判定中……";
-
-}, 1400);
-
-
-// ここで一瞬止める
-setTimeout(() => {
-
-  document.body.classList.add("battle-shake");
-
-}, 1800);
-
-
-// 最終結果
-setTimeout(() => {
-
-  document.body.classList.remove("battle-shake");
 
   const win =
     result === (me === 1 ? 1 : -1);
@@ -296,7 +267,7 @@ setTimeout(() => {
       ? "あなたの勝ち！"
       : "あなたの負け…";
 
-}, 2300);
+}, 900);
 }
 
 
