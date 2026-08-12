@@ -637,3 +637,37 @@ button:hover{background:#555}.row{margin-bottom:10px}.join{display:grid;grid-tem
   }
 
 }
+/* =========================
+   勝敗発表前の緊張感
+========================= */
+
+.battle-shake {
+  animation: battleShake 0.35s ease-in-out;
+}
+
+@keyframes battleShake {
+
+  0% {
+    transform: translate(0, 0);
+  }
+
+  20% {
+    transform: translate(-5px, 2px);
+  }
+
+  40% {
+    transform: translate(5px, -2px);
+  }
+
+  60% {
+    transform: translate(-4px, 1px);
+  }
+
+  80% {
+    transform: translate(4px, -1px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
