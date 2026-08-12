@@ -357,27 +357,16 @@ function handle(m) {
 
     setTimeout(() => {
 
-      for (let n = 1; n <= 9; n++) {
+  // 使用済み数字はリセットしない
+  // ゲーム終了まで表示を残す
 
-        const button =
-          $("n" + n);
+  $("p1card").className =
+    "card hidden";
 
-        if (button) {
-          button.classList.remove("used");
-        }
-      }
+  $("p2card").className =
+    "card hidden";
 
-      // 次のラウンドなので9枚に戻す
-      updateRemaining();
-
-
-      $("p1card").className =
-        "card hidden";
-
-      $("p2card").className =
-        "card hidden";
-
-    }, 1500);
+}, 1500);
 
     return;
   }
