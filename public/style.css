@@ -569,3 +569,71 @@ button:hover{background:#555}.row{margin-bottom:10px}.join{display:grid;grid-tem
   }
 
 }
+/* =========================
+   使用済み数字カード
+========================= */
+
+.buttons button.used {
+  position: relative;
+
+  opacity: 0.25;
+
+  filter: grayscale(1);
+
+  background: #111;
+
+  color: #666;
+
+  border-color: #333;
+
+  transform: scale(0.92);
+
+  cursor: not-allowed;
+
+  pointer-events: none;
+}
+
+
+/* 使用済みカードに「×」を表示 */
+
+.buttons button.used::after {
+  content: "×";
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  font-size: 42px;
+
+  font-weight: 900;
+
+  color: #aaa;
+
+  text-shadow:
+    0 0 5px #000;
+}
+
+
+/* 使用済みになった瞬間 */
+
+.buttons button.used {
+  animation: usedCard .35s ease-out;
+}
+
+
+@keyframes usedCard {
+
+  0% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(.92);
+    opacity: .25;
+  }
+
+}
