@@ -11,3 +11,212 @@ button:hover{background:#555}.row{margin-bottom:10px}.join{display:grid;grid-tem
 .message{text-align:center;font-size:21px;font-weight:800;min-height:34px}.buttons{display:grid;grid-template-columns:repeat(9,1fr);gap:7px;margin-top:14px}
 .buttons button{font-size:20px}.buttons button.used{opacity:.2;pointer-events:none}.rule{color:#999;font-size:13px;text-align:center}
 #back{display:block;margin:16px auto 0;background:#292b31}@media(max-width:600px){main{padding:12px}.buttons{grid-template-columns:repeat(5,1fr)}.card{width:80px;height:110px}}
+/* =========================
+   NUMBER CROSS ロゴ
+========================= */
+
+.game-logo {
+  position: relative;
+  text-align: center;
+  margin: 15px 0 30px;
+  padding: 25px 10px 10px;
+  overflow: hidden;
+}
+
+/* NUMBER */
+
+.logo-number {
+  font-size: clamp(42px, 10vw, 78px);
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  line-height: 0.9;
+
+  color: #ffffff;
+
+  text-shadow:
+    3px 3px 0 #444,
+    0 0 10px #ffffff,
+    0 0 25px #999;
+
+  animation: logoNumber 0.8s ease-out;
+}
+
+/* CROSS */
+
+.logo-cross {
+  margin-left: 35px;
+
+  font-size: clamp(48px, 12vw, 92px);
+  font-weight: 1000;
+  font-style: italic;
+  letter-spacing: 0.06em;
+  line-height: 0.9;
+
+  color: #ffffff;
+
+  text-shadow:
+    4px 4px 0 #333,
+    0 0 12px #ffffff,
+    0 0 35px #888;
+
+  animation: logoCross 1s ease-out;
+}
+
+/* ONLINE BATTLE */
+
+.logo-sub {
+  margin-top: 18px;
+
+  font-size: 13px;
+  font-weight: bold;
+  letter-spacing: 0.45em;
+
+  color: #aaa;
+
+  animation: logoSub 1.5s ease-out;
+}
+
+/* 数字 */
+
+.number-orbit {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+
+  margin-top: 22px;
+
+  opacity: 0.55;
+}
+
+.number-orbit span {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #777;
+  border-radius: 5px;
+
+  font-weight: bold;
+
+  background: #16181d;
+
+  animation: numberFloat 2s ease-in-out infinite;
+}
+
+.number-orbit span:nth-child(2) {
+  animation-delay: .1s;
+}
+
+.number-orbit span:nth-child(3) {
+  animation-delay: .2s;
+}
+
+.number-orbit span:nth-child(4) {
+  animation-delay: .3s;
+}
+
+.number-orbit span:nth-child(5) {
+  animation-delay: .4s;
+}
+
+.number-orbit span:nth-child(6) {
+  animation-delay: .5s;
+}
+
+.number-orbit span:nth-child(7) {
+  animation-delay: .6s;
+}
+
+.number-orbit span:nth-child(8) {
+  animation-delay: .7s;
+}
+
+.number-orbit span:nth-child(9) {
+  animation-delay: .8s;
+}
+
+
+/* アニメーション */
+
+@keyframes logoNumber {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateX(-100px)
+      scale(.6);
+  }
+
+  70% {
+    transform:
+      translateX(10px)
+      scale(1.08);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translateX(0)
+      scale(1);
+  }
+
+}
+
+
+@keyframes logoCross {
+
+  0% {
+    opacity: 0;
+    transform:
+      translateX(100px)
+      scale(.6);
+  }
+
+  70% {
+    transform:
+      translateX(-8px)
+      scale(1.08);
+  }
+
+  100% {
+    opacity: 1;
+    transform:
+      translateX(0)
+      scale(1);
+  }
+
+}
+
+
+@keyframes logoSub {
+
+  0%,
+  55% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+}
+
+
+@keyframes numberFloat {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+
+}
