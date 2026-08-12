@@ -1,60 +1,54 @@
-// ==================================================
-// NUMBER CROSS
-// 完成版 app.js
-// ==================================================
+let ws;
 
-let ws = null;
 let me = 0;
 
-let selectedThisRound = false;
-
-// ==================================================
-// HTML取得
-// ==================================================
-
-const $ = id => document.getElementById(id);
-
-// ==================================================
-// Audio
-// ==================================================
-
 let audioCtx = null;
+
 let drumTimer = null;
 
-// --------------------------------------------------
-// Audio初期化
-// --------------------------------------------------
+const $ = id =>
+  document.getElementById(id);
+
+
+// ==================================================
+// AUDIO
+// ==================================================
 
 function initAudio() {
 
   if (!audioCtx) {
 
     audioCtx =
-      new (window.AudioContext ||
-        window.webkitAudioContext)();
+      new (
+        window.AudioContext ||
+        window.webkitAudioContext
+      )();
+
   }
 
-  if (audioCtx.state === "suspended") {
+  if (
+    audioCtx.state === "suspended"
+  ) {
 
     audioCtx.resume();
+
   }
 }
 
-// --------------------------------------------------
-// 単音
-// --------------------------------------------------
+
+// ==================================================
+// 基本音
+// ==================================================
 
 function tone(
   frequency,
   duration,
   type = "sine",
-  volume = 0.08,
+  volume = 0.1,
   delay = 0
 ) {
 
-  if (!audioCtx) {
-    return;
-  }
+  initAudio();
 
   const osc =
     audioCtx.createOscillator();
@@ -63,7 +57,8 @@ function tone(
     audioCtx.createGain();
 
   const start =
-    audioCtx.currentTime + delay;
+    audioCtx.currentTime +
+    delay;
 
   osc.type = type;
 
@@ -79,7 +74,7 @@ function tone(
 
   gain.gain.exponentialRampToValueAtTime(
     volume,
-    start + 0.01
+    start + 0.02
   );
 
   gain.gain.exponentialRampToValueAtTime(
@@ -88,7 +83,10 @@ function tone(
   );
 
   osc.connect(gain);
-  gain.connect(audioCtx.destination);
+
+  gain.connect(
+    audioCtx.destination
+  );
 
   osc.start(start);
 
@@ -97,8 +95,9 @@ function tone(
   );
 }
 
+
 // ==================================================
-// 数字選択音
+// 選択音
 // ==================================================
 
 function playSelectSound() {
@@ -121,6 +120,7 @@ function playSelectSound() {
   );
 }
 
+
 // ==================================================
 // カード突進音
 // ==================================================
@@ -135,45 +135,47 @@ function playAttackSound() {
   const gain =
     audioCtx.createGain();
 
-  const now =
-    audioCtx.currentTime;
-
-  osc.type = "sawtooth";
+  osc.type =
+    "sawtooth";
 
   osc.frequency.setValueAtTime(
     180,
-    now
+    audioCtx.currentTime
   );
 
   osc.frequency.exponentialRampToValueAtTime(
     850,
-    now + 0.35
+    audioCtx.currentTime + 0.35
   );
 
   gain.gain.setValueAtTime(
     0.0001,
-    now
+    audioCtx.currentTime
   );
 
   gain.gain.exponentialRampToValueAtTime(
     0.08,
-    now + 0.03
+    audioCtx.currentTime + 0.03
   );
 
   gain.gain.exponentialRampToValueAtTime(
     0.0001,
-    now + 0.35
+    audioCtx.currentTime + 0.35
   );
 
   osc.connect(gain);
-  gain.connect(audioCtx.destination);
 
-  osc.start(now);
+  gain.connect(
+    audioCtx.destination
+  );
+
+  osc.start();
 
   osc.stop(
-    now + 0.37
+    audioCtx.currentTime + 0.37
   );
 }
+
 
 // ==================================================
 // 激突音
@@ -206,6 +208,7 @@ function playImpactSound() {
   );
 }
 
+
 // ==================================================
 // ドラムロール
 // ==================================================
@@ -217,6 +220,7 @@ function startDrumRoll() {
   initAudio();
 
   let count = 0;
+
   let interval = 115;
 
   function hit() {
@@ -226,9 +230,7 @@ function startDrumRoll() {
     }
 
     const bufferSize =
-      Math.floor(
-        audioCtx.sampleRate * 0.08
-      );
+      audioCtx.sampleRate * 0.08;
 
     const buffer =
       audioCtx.createBuffer(
@@ -247,8 +249,13 @@ function startDrumRoll() {
     ) {
 
       data[i] =
-        (Math.random() * 2 - 1) *
-        Math.exp(-i / 900);
+        (
+          Math.random() * 2 - 1
+        ) *
+        Math.exp(
+          -i / 900
+        );
+
     }
 
     const source =
@@ -257,7 +264,8 @@ function startDrumRoll() {
     const gain =
       audioCtx.createGain();
 
-    source.buffer = buffer;
+    source.buffer =
+      buffer;
 
     gain.gain.setValueAtTime(
       0.12,
@@ -270,6 +278,7 @@ function startDrumRoll() {
     );
 
     source.connect(gain);
+
     gain.connect(
       audioCtx.destination
     );
@@ -289,6 +298,7 @@ function startDrumRoll() {
     } else {
 
       interval = 65;
+
     }
 
     drumTimer =
@@ -300,6 +310,7 @@ function startDrumRoll() {
 
   hit();
 }
+
 
 // ==================================================
 // ドラム停止
@@ -314,8 +325,10 @@ function stopDrumRoll() {
     );
 
     drumTimer = null;
+
   }
 }
+
 
 // ==================================================
 // 勝利音
@@ -359,6 +372,7 @@ function playWinSound() {
   );
 }
 
+
 // ==================================================
 // 敗北音
 // ==================================================
@@ -393,6 +407,7 @@ function playLoseSound() {
   );
 }
 
+
 // ==================================================
 // 引き分け音
 // ==================================================
@@ -419,18 +434,22 @@ function playDrawSound() {
   );
 }
 
+
 // ==================================================
-// WebSocket接続
+// WebSocket
 // ==================================================
 
 function connect() {
 
-  ws = new WebSocket(
-    (location.protocol === "https:"
-      ? "wss://"
-      : "ws://") +
-    location.host
-  );
+  ws =
+    new WebSocket(
+      (
+        location.protocol === "https:"
+          ? "wss://"
+          : "ws://"
+      ) +
+      location.host
+    );
 
   ws.onopen = () => {
 
@@ -441,7 +460,9 @@ function connect() {
 
       status.textContent =
         "サーバー接続OK";
+
     }
+
   };
 
   ws.onclose = () => {
@@ -453,38 +474,22 @@ function connect() {
 
       status.textContent =
         "サーバーから切断されました";
+
     }
-  };
 
-  ws.onerror = () => {
-
-    const status =
-      $("status");
-
-    if (status) {
-
-      status.textContent =
-        "サーバー接続エラー";
-    }
   };
 
   ws.onmessage = e => {
 
-    try {
+    handle(
+      JSON.parse(
+        e.data
+      )
+    );
 
-      handle(
-        JSON.parse(e.data)
-      );
-
-    } catch (error) {
-
-      console.error(
-        "受信データエラー:",
-        error
-      );
-    }
   };
 }
+
 
 // ==================================================
 // データ送信
@@ -494,14 +499,16 @@ function send(data) {
 
   if (
     ws &&
-    ws.readyState === WebSocket.OPEN
+    ws.readyState === 1
   ) {
 
     ws.send(
       JSON.stringify(data)
     );
+
   }
 }
+
 
 // ==================================================
 // プレイヤー名
@@ -509,19 +516,19 @@ function send(data) {
 
 function playerName() {
 
-  const input =
+  const name =
     $("name");
 
-  if (!input) {
-
+  if (!name) {
     return "PLAYER";
   }
 
   return (
-    input.value.trim() ||
+    name.value.trim() ||
     "PLAYER"
   );
 }
+
 
 // ==================================================
 // ルーム作成
@@ -537,14 +544,15 @@ if (createButton) {
     initAudio();
 
     send({
-
       type: "create",
-
       name:
         playerName()
     });
+
   };
+
 }
+
 
 // ==================================================
 // ルーム参加
@@ -559,23 +567,22 @@ if (joinButton) {
 
     initAudio();
 
-    const room =
-      $("room");
-
     send({
 
       type: "join",
 
       roomId:
-        room
-          ? room.value.trim()
-          : "",
+        $("room").value.trim(),
 
       name:
         playerName()
+
     });
+
   };
+
 }
+
 
 // ==================================================
 // ロビーへ戻る
@@ -591,11 +598,14 @@ if (backButton) {
     stopDrumRoll();
 
     location.reload();
+
   };
+
 }
 
+
 // ==================================================
-// 残り数字表示
+// 残り数字
 // ==================================================
 
 function updateRemaining() {
@@ -613,11 +623,15 @@ function updateRemaining() {
 
     if (
       button &&
-      button.classList.contains("used")
+      button.classList.contains(
+        "used"
+      )
     ) {
 
       used++;
+
     }
+
   }
 
   const remaining =
@@ -632,8 +646,19 @@ function updateRemaining() {
       "残り数字：" +
       remaining +
       "枚";
+
   }
+
 }
+
+
+// ==================================================
+// ラウンド選択状態
+// ==================================================
+
+let selectedThisRound =
+  false;
+
 
 // ==================================================
 // 数字ボタン生成
@@ -661,54 +686,38 @@ if (buttonsArea) {
     button.id =
       "n" + n;
 
-    button.type =
-      "button";
-
     button.onclick = () => {
 
-      // --------------------------------------------
-      // このラウンドですでに選択済み
-      // --------------------------------------------
-
-      if (selectedThisRound) {
+      // すでに選択済み
+      if (
+        selectedThisRound
+      ) {
 
         return;
+
       }
 
-      // --------------------------------------------
-      // Audio
-      // --------------------------------------------
-
+      // 音声開始
       initAudio();
 
       playSelectSound();
 
-      // --------------------------------------------
-      // 選択状態
-      // --------------------------------------------
+      selectedThisRound =
+        true;
 
-      selectedThisRound = true;
-
-      // ★ 選択中は青く光る
-      // ★ この時点では used にしない
+      // 青く光る
       button.classList.add(
         "selected"
       );
 
-      // --------------------------------------------
       // サーバーへ送信
-      // --------------------------------------------
-
       send({
 
         type: "move",
 
         number: n
-      });
 
-      // --------------------------------------------
-      // メッセージ
-      // --------------------------------------------
+      });
 
       const message =
         $("message");
@@ -719,12 +728,10 @@ if (buttonsArea) {
           "NUMBER " +
           n +
           " を選択";
+
       }
 
-      // --------------------------------------------
       // 他の数字をロック
-      // --------------------------------------------
-
       for (
         let i = 1;
         i <= 9;
@@ -734,22 +741,30 @@ if (buttonsArea) {
         const otherButton =
           $("n" + i);
 
-        if (otherButton) {
+        if (
+          otherButton
+        ) {
 
           otherButton.disabled =
             true;
+
         }
+
       }
+
     };
 
     buttonsArea.appendChild(
       button
     );
+
   }
+
 }
 
+
 // ==================================================
-// 爆発エフェクト
+// 爆発
 // ==================================================
 
 function explosion() {
@@ -777,7 +792,8 @@ function explosion() {
     particle.style.setProperty(
       "--x",
       (
-        Math.random() * 400 -
+        Math.random() *
+        400 -
         200
       ) + "px"
     );
@@ -785,7 +801,8 @@ function explosion() {
     particle.style.setProperty(
       "--y",
       (
-        Math.random() * 300 -
+        Math.random() *
+        300 -
         150
       ) + "px"
     );
@@ -794,13 +811,19 @@ function explosion() {
       particle
     );
 
-    setTimeout(() => {
+    setTimeout(
+      () => {
 
-      particle.remove();
+        particle.remove();
 
-    }, 900);
+      },
+      800
+    );
+
   }
+
 }
+
 
 // ==================================================
 // 勝敗表示
@@ -814,19 +837,28 @@ function showResult(
   const overlay =
     $("battleOverlay");
 
-  const battleText =
-    $("battleText");
-
-  if (
-    !overlay ||
-    !battleText
-  ) {
+  if (!overlay) {
 
     const message =
       $("message");
 
     if (message) {
+      message.textContent =
+        text;
+    }
 
+    return;
+  }
+
+  const battleText =
+    $("battleText");
+
+  if (!battleText) {
+
+    const message =
+      $("message");
+
+    if (message) {
       message.textContent =
         text;
     }
@@ -845,13 +877,17 @@ function showResult(
         : "defeat"
     );
 
-  setTimeout(() => {
+  setTimeout(
+    () => {
 
-    overlay.className =
-      "battle-overlay";
+      overlay.className =
+        "battle-overlay";
 
-  }, 1500);
+    },
+    1200
+  );
 }
+
 
 // ==================================================
 // バトル演出
@@ -870,13 +906,12 @@ function battleAnimation(
     $("p2card");
 
   if (!left || !right) {
-
     return;
   }
 
-  // ----------------------------------------------
-  // カード表示
-  // ----------------------------------------------
+  // ================================================
+  // 最初は数字を見せない
+  // ================================================
 
   left.className =
     "card battle-card left-card";
@@ -885,137 +920,64 @@ function battleAnimation(
     "card battle-card right-card";
 
   left.textContent =
-    p1;
+    "？";
 
   right.textContent =
-    p2;
+    "？";
 
-  // ----------------------------------------------
+
+  // ================================================
   // カード突進
-  // ----------------------------------------------
+  // ================================================
 
-  setTimeout(() => {
+  setTimeout(
+    () => {
 
-    playAttackSound();
+      playAttackSound();
 
-    left.classList.add(
-      "attack-left"
-    );
+      left.classList.add(
+        "attack-left"
+      );
 
-    right.classList.add(
-      "attack-right"
-    );
+      right.classList.add(
+        "attack-right"
+      );
 
-  }, 100);
+    },
+    100
+  );
 
-  // ----------------------------------------------
+
+  // ================================================
   // 激突
-  // ----------------------------------------------
+  // ================================================
 
-  setTimeout(() => {
+  setTimeout(
+    () => {
 
-    playImpactSound();
-
-    left.classList.add(
-      "impact"
-    );
-
-    right.classList.add(
-      "impact"
-    );
-
-    explosion();
-
-  }, 650);
-
-  // ----------------------------------------------
-  // 間
-  // ----------------------------------------------
-
-  setTimeout(() => {
-
-    const message =
-      $("message");
-
-    if (message) {
-
-      message.textContent =
-        "……";
-    }
-
-  }, 1000);
-
-  // ----------------------------------------------
-  // ドラムロール
-  // ----------------------------------------------
-
-  setTimeout(() => {
-
-    const message =
-      $("message");
-
-    if (message) {
-
-      message.textContent =
-        "勝敗は……";
-    }
-
-    startDrumRoll();
-
-  }, 1400);
-
-  // ----------------------------------------------
-  // 勝敗発表
-  // ----------------------------------------------
-
-  setTimeout(() => {
-
-    const win =
-      result ===
-      (me === 1 ? 1 : -1);
-
-    // --------------------------------------------
-    // P1勝利
-    // --------------------------------------------
-
-    if (result === 1) {
+      playImpactSound();
 
       left.classList.add(
-        "winner-card"
+        "impact"
       );
 
       right.classList.add(
-        "loser-card"
-      );
-    }
-
-    // --------------------------------------------
-    // P2勝利
-    // --------------------------------------------
-
-    else if (result === -1) {
-
-      right.classList.add(
-        "winner-card"
+        "impact"
       );
 
-      left.classList.add(
-        "loser-card"
-      );
-    }
+      explosion();
 
-    // --------------------------------------------
-    // 引き分け
-    // --------------------------------------------
+    },
+    650
+  );
 
-    if (result === 0) {
 
-      playDrawSound();
+  // ================================================
+  // 少し沈黙
+  // ================================================
 
-      showResult(
-        "DRAW!",
-        false
-      );
+  setTimeout(
+    () => {
 
       const message =
         $("message");
@@ -1023,57 +985,182 @@ function battleAnimation(
       if (message) {
 
         message.textContent =
-          "引き分け！";
+          "……";
+
       }
 
-      return;
-    }
+    },
+    1000
+  );
 
-    // --------------------------------------------
-    // 勝利 / 敗北
-    // --------------------------------------------
 
-    if (win) {
+  // ================================================
+  // ドラムロール
+  // ================================================
 
-      playWinSound();
+  setTimeout(
+    () => {
 
-    } else {
+      const message =
+        $("message");
 
-      playLoseSound();
-    }
+      if (message) {
 
-    showResult(
-      win
-        ? "YOU WIN!"
-        : "YOU LOSE!",
-      win
-    );
+        message.textContent =
+          "勝敗は……";
 
-    const message =
-      $("message");
+      }
 
-    if (message) {
+      startDrumRoll();
 
-      message.textContent =
+    },
+    1400
+  );
+
+
+  // ================================================
+  // 数字公開
+  // ================================================
+
+  setTimeout(
+    () => {
+
+      // 数字をここで初めて表示
+      left.textContent =
+        p1;
+
+      right.textContent =
+        p2;
+
+    },
+    2100
+  );
+
+
+  // ================================================
+  // 勝敗発表
+  // ================================================
+
+  setTimeout(
+    () => {
+
+      const win =
+        result ===
+        (
+          me === 1
+            ? 1
+            : -1
+        );
+
+
+      // 勝者
+      if (result === 1) {
+
+        left.classList.add(
+          "winner-card"
+        );
+
+        right.classList.add(
+          "loser-card"
+        );
+
+      }
+
+
+      // 敗者
+      else if (result === -1) {
+
+        right.classList.add(
+          "winner-card"
+        );
+
+        left.classList.add(
+          "loser-card"
+        );
+
+      }
+
+
+      // 引き分け
+      if (result === 0) {
+
+        playDrawSound();
+
+        showResult(
+          "DRAW!",
+          false
+        );
+
+        const message =
+          $("message");
+
+        if (message) {
+
+          message.textContent =
+            "引き分け！";
+
+        }
+
+        return;
+
+      }
+
+
+      // 勝利 / 敗北
+      if (win) {
+
+        playWinSound();
+
+      } else {
+
+        playLoseSound();
+
+      }
+
+
+      showResult(
+
         win
-          ? "あなたの勝ち！"
-          : "あなたの負け…";
-    }
+          ? "YOU WIN!"
+          : "YOU LOSE!",
 
-  }, 2700);
+        win
+
+      );
+
+
+      const message =
+        $("message");
+
+      if (message) {
+
+        message.textContent =
+          win
+            ? "あなたの勝ち！"
+            : "あなたの負け…";
+
+      }
+
+    },
+    2700
+  );
+
 }
 
+
 // ==================================================
-// サーバーからのデータ処理
+// サーバーからのデータ
 // ==================================================
 
 function handle(m) {
 
-  // =================================================
+  // ================================================
   // エラー
-  // =================================================
+  // ================================================
 
-  if (m.type === "error") {
+  if (
+    m.type === "error"
+  ) {
 
     alert(
       m.message
@@ -1082,11 +1169,14 @@ function handle(m) {
     return;
   }
 
-  // =================================================
-  // 参加成功
-  // =================================================
 
-  if (m.type === "joined") {
+  // ================================================
+  // 参加成功
+  // ================================================
+
+  if (
+    m.type === "joined"
+  ) {
 
     me =
       m.player;
@@ -1098,40 +1188,8 @@ function handle(m) {
 
       roomId.textContent =
         m.roomId;
+
     }
-
-    // ----------------------------------------------
-    // プレイヤー名表示
-    // ----------------------------------------------
-
-    if (me === 1) {
-
-      const p1name =
-        $("p1name");
-
-      if (p1name) {
-
-        p1name.textContent =
-          m.name ||
-          "PLAYER 1";
-      }
-
-    } else {
-
-      const p2name =
-        $("p2name");
-
-      if (p2name) {
-
-        p2name.textContent =
-          m.name ||
-          "PLAYER 2";
-      }
-    }
-
-    // ----------------------------------------------
-    // 画面切り替え
-    // ----------------------------------------------
 
     const lobby =
       $("lobby");
@@ -1144,6 +1202,7 @@ function handle(m) {
       lobby.classList.add(
         "hidden"
       );
+
     }
 
     if (game) {
@@ -1151,6 +1210,7 @@ function handle(m) {
       game.classList.remove(
         "hidden"
       );
+
     }
 
     updateRemaining();
@@ -1164,28 +1224,73 @@ function handle(m) {
         me === 1
           ? "相手の参加を待っています…"
           : "ゲーム開始！";
+
     }
 
     return;
   }
 
-  // =================================================
-  // ゲーム状態
-  // =================================================
 
-  if (m.type === "state") {
+  // ================================================
+  // プレイヤー名
+  // ================================================
+
+  if (
+    m.type === "players"
+  ) {
+
+    const p1name =
+      $("p1name");
+
+    const p2name =
+      $("p2name");
+
+    if (p1name) {
+
+      p1name.textContent =
+        m.p1Name ||
+        "PLAYER 1";
+
+    }
+
+    if (p2name) {
+
+      p2name.textContent =
+        m.p2Name ||
+        "PLAYER 2";
+
+    }
+
+    return;
+  }
+
+
+  // ================================================
+  // ゲーム状態
+  // ================================================
+
+  if (
+    m.type === "state"
+  ) {
 
     const round =
       $("round");
+
+    const scores =
+      $("scores");
+
+    const p1state =
+      $("p1state");
+
+    const p2state =
+      $("p2state");
 
     if (round) {
 
       round.textContent =
         m.round;
-    }
 
-    const scores =
-      $("scores");
+    }
 
     if (scores) {
 
@@ -1193,10 +1298,8 @@ function handle(m) {
         m.p1Score +
         " - " +
         m.p2Score;
-    }
 
-    const p1state =
-      $("p1state");
+    }
 
     if (p1state) {
 
@@ -1204,10 +1307,8 @@ function handle(m) {
         m.p1Connected
           ? "接続中"
           : "待機中";
-    }
 
-    const p2state =
-      $("p2state");
+    }
 
     if (p2state) {
 
@@ -1215,106 +1316,16 @@ function handle(m) {
         m.p2Connected
           ? "接続中"
           : "待機中";
+
     }
 
-    // ----------------------------------------------
-    // ★ プレイヤー名
-    // ----------------------------------------------
-
-    const p1name =
-      $("p1name");
-
-    if (p1name) {
-
-      p1name.textContent =
-        m.p1Name ||
-        "PLAYER 1";
-    }
-
-    const p2name =
-      $("p2name");
-
-    if (p2name) {
-
-      p2name.textContent =
-        m.p2Name ||
-        "PLAYER 2";
-    }
-
-    // ----------------------------------------------
-    // プレイ中
-    // ----------------------------------------------
-
+    // 次ラウンド
     if (
       m.status === "playing"
     ) {
 
-      const message =
-        $("message");
-
-      if (message) {
-
-        message.textContent =
-          "数字を1枚選んでください";
-      }
-    }
-
-    return;
-  }
-
-  // =================================================
-  // 待機
-  // =================================================
-
-  if (m.type === "waiting") {
-
-    const message =
-      $("message");
-
-    if (message) {
-
-      message.textContent =
-        "相手の選択を待っています…";
-    }
-
-    return;
-  }
-
-  // =================================================
-  // ラウンド結果
-  // =================================================
-
-  if (
-    m.type === "roundResult"
-  ) {
-
-    battleAnimation(
-      m.p1,
-      m.p2,
-      m.result
-    );
-
-    setTimeout(() => {
-
-      // --------------------------------------------
-      // 次ラウンド
-      // --------------------------------------------
-
       selectedThisRound =
         false;
-
-      // --------------------------------------------
-      // 自分が今回使った数字
-      // --------------------------------------------
-
-      const myNumber =
-        me === 1
-          ? m.p1
-          : m.p2;
-
-      // --------------------------------------------
-      // ボタン処理
-      // --------------------------------------------
 
       for (
         let n = 1;
@@ -1325,83 +1336,195 @@ function handle(m) {
         const button =
           $("n" + n);
 
-        if (!button) {
-          continue;
+        if (button) {
+
+          button.classList.remove(
+            "selected"
+          );
+
+          button.disabled =
+            button.classList.contains(
+              "used"
+            );
+
         }
 
-        // 青色解除
-        button.classList.remove(
-          "selected"
-        );
-
-        // 今回自分が選んだ数字
-        if (
-          Number(button.textContent) ===
-          Number(myNumber)
-        ) {
-
-          // ★ ここで初めて使用済み
-          button.classList.add(
-            "used"
-          );
-        }
-
-        // 使用済みだけロック
-        button.disabled =
-          button.classList.contains(
-            "used"
-          );
       }
 
-      // --------------------------------------------
-      // 残り数字
-      // --------------------------------------------
+      const message =
+        $("message");
 
-      updateRemaining();
+      if (message) {
 
-      // --------------------------------------------
-      // バトルカードを隠す
-      // --------------------------------------------
+        message.textContent =
+          "数字を1枚選んでください";
 
-      const p1card =
-        $("p1card");
-
-      const p2card =
-        $("p2card");
-
-      if (p1card) {
-
-        p1card.className =
-          "card hidden";
       }
 
-      if (p2card) {
-
-        p2card.className =
-          "card hidden";
-      }
-
-    }, 3300);
+    }
 
     return;
   }
 
-  // =================================================
+
+  // ================================================
+  // 相手待ち
+  // ================================================
+
+  if (
+    m.type === "waiting"
+  ) {
+
+    const message =
+      $("message");
+
+    if (message) {
+
+      message.textContent =
+        "相手の選択を待っています…";
+
+    }
+
+    return;
+  }
+
+
+  // ================================================
+  // 両者選択完了
+  // ================================================
+
+  if (
+    m.type === "battleStart"
+  ) {
+
+    const message =
+      $("message");
+
+    if (message) {
+
+      message.textContent =
+        "両者の数字が決定！";
+
+    }
+
+    // カードはまだ「？」のまま
+    const left =
+      $("p1card");
+
+    const right =
+      $("p2card");
+
+    if (left) {
+      left.className =
+        "card hidden";
+      left.textContent =
+        "？";
+    }
+
+    if (right) {
+      right.className =
+        "card hidden";
+      right.textContent =
+        "？";
+    }
+
+    return;
+  }
+
+
+  // ================================================
+  // ラウンド結果
+  // ================================================
+
+  if (
+    m.type === "roundResult"
+  ) {
+
+    // この時点で初めて数字を受信
+    battleAnimation(
+      m.p1,
+      m.p2,
+      m.result
+    );
+
+    // ============================================
+    // 使用済み数字
+    // ============================================
+
+    setTimeout(
+      () => {
+
+        selectedThisRound =
+          false;
+
+        const myNumber =
+          me === 1
+            ? m.p1
+            : m.p2;
+
+        for (
+          let n = 1;
+          n <= 9;
+          n++
+        ) {
+
+          const button =
+            $("n" + n);
+
+          if (!button) {
+            continue;
+          }
+
+          // 青色解除
+          button.classList.remove(
+            "selected"
+          );
+
+          // 今回自分が選んだ数字
+          if (
+            Number(
+              button.textContent
+            ) === myNumber
+          ) {
+
+            button.classList.add(
+              "used"
+            );
+
+          }
+
+          // 使用済みはロック
+          button.disabled =
+            button.classList.contains(
+              "used"
+            );
+
+        }
+
+        updateRemaining();
+
+      },
+      3300
+    );
+
+    return;
+  }
+
+
+  // ================================================
   // ゲーム終了
-  // =================================================
+  // ================================================
 
-  if (m.type === "gameOver") {
-
-    stopDrumRoll();
+  if (
+    m.type === "gameOver"
+  ) {
 
     const win =
       m.winner === me;
 
-    // ----------------------------------------------
-    // 結果音
-    // ----------------------------------------------
-
-    if (m.winner === 0) {
+    if (
+      m.winner === 0
+    ) {
 
       playDrawSound();
 
@@ -1412,11 +1535,8 @@ function handle(m) {
     } else {
 
       playLoseSound();
-    }
 
-    // ----------------------------------------------
-    // 結果表示
-    // ----------------------------------------------
+    }
 
     showResult(
 
@@ -1427,6 +1547,7 @@ function handle(m) {
           : "DEFEAT",
 
       win
+
     );
 
     const message =
@@ -1435,20 +1556,21 @@ function handle(m) {
     if (message) {
 
       message.textContent =
-
         m.winner === 0
           ? "引き分け！"
           : win
             ? "あなたの勝利！"
             : "あなたの敗北…";
+
     }
 
     return;
   }
 
-  // =================================================
+
+  // ================================================
   // 相手退出
-  // =================================================
+  // ================================================
 
   if (
     m.type === "opponentLeft"
@@ -1463,11 +1585,14 @@ function handle(m) {
 
       message.textContent =
         "相手が退出しました。";
+
     }
 
     return;
   }
+
 }
+
 
 // ==================================================
 // 起動
