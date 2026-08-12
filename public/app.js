@@ -100,6 +100,12 @@ function updateRemaining() {
 // 数字ボタン
 // ==========================
 
+// ==========================
+// 数字ボタン
+// ==========================
+
+let selectedThisRound = false;
+
 for (let n = 1; n <= 9; n++) {
 
   const button = document.createElement("button");
@@ -109,6 +115,14 @@ for (let n = 1; n <= 9; n++) {
 
   button.onclick = () => {
 
+    // このラウンドですでに選択済みなら何もしない
+    if (selectedThisRound) {
+      return;
+    }
+
+    // 選択済みにする
+    selectedThisRound = true;
+
     send({
       type: "move",
       number: n
@@ -116,11 +130,21 @@ for (let n = 1; n <= 9; n++) {
 
     button.classList.add("used");
 
-    // 残り数字を更新
     updateRemaining();
 
     $("message").textContent =
       "NUMBER " + n + " を選択";
+
+    // 他の数字も一時的に押せなくする
+    for (let i = 1; i <= 9; i++) {
+
+      const otherButton = $("n" + i);
+
+      if (otherButton) {
+        otherButton.disabled = true;
+      }
+    }
+
   };
 
   $("buttons").appendChild(button);
