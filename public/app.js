@@ -233,37 +233,70 @@ function battleAnimation(p1, p2, result) {
   }, 650);
 
 
-  // 勝敗
-  setTimeout(() => {
+  // ==========================
+// 勝敗発表まで焦らす
+// ==========================
 
-    const win =
-      result === (me === 1 ? 1 : -1);
+// 激突後：まだ結果を見せない
+setTimeout(() => {
 
+  $("message").textContent =
+    "……";
 
-    if (result === 1) {
-
-      left.classList.add("winner-card");
-      right.classList.add("loser-card");
-
-    } else if (result === -1) {
-
-      right.classList.add("winner-card");
-      left.classList.add("loser-card");
-
-    }
+}, 900);
 
 
-    showResult(
-      win ? "YOU WIN!" : "YOU LOSE!",
-      win
-    );
+// さらに少し溜める
+setTimeout(() => {
 
-    $("message").textContent =
-      win
-        ? "あなたの勝ち！"
-        : "あなたの負け…";
+  $("message").textContent =
+    "勝敗判定中……";
 
-  }, 900);
+}, 1400);
+
+
+// ここで一瞬止める
+setTimeout(() => {
+
+  document.body.classList.add("battle-shake");
+
+}, 1800);
+
+
+// 最終結果
+setTimeout(() => {
+
+  document.body.classList.remove("battle-shake");
+
+  const win =
+    result === (me === 1 ? 1 : -1);
+
+
+  if (result === 1) {
+
+    left.classList.add("winner-card");
+    right.classList.add("loser-card");
+
+  } else if (result === -1) {
+
+    right.classList.add("winner-card");
+    left.classList.add("loser-card");
+
+  }
+
+
+  showResult(
+    win ? "YOU WIN!" : "YOU LOSE!",
+    win
+  );
+
+
+  $("message").textContent =
+    win
+      ? "あなたの勝ち！"
+      : "あなたの負け…";
+
+}, 2300);
 }
 
 
