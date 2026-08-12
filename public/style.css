@@ -671,3 +671,195 @@ button:hover{background:#555}.row{margin-bottom:10px}.join{display:grid;grid-tem
     transform: translate(0, 0);
   }
 }
+/* =========================
+   勝敗アニメーション
+========================= */
+
+/* 勝者カード */
+.winner-card {
+  animation:
+    winnerFlash 0.7s ease-out,
+    winnerPulse 1s 0.7s infinite alternate;
+
+  z-index: 10;
+
+  box-shadow:
+    0 0 15px #fff,
+    0 0 35px #fff,
+    0 0 70px #aaa;
+}
+
+
+/* 敗者カード */
+.loser-card {
+  opacity: 0.3;
+
+  filter: grayscale(1);
+
+  transform: scale(0.85);
+
+  transition:
+    opacity 0.5s ease,
+    transform 0.5s ease,
+    filter 0.5s ease;
+}
+
+
+/* 勝者が一気に光る */
+@keyframes winnerFlash {
+
+  0% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+
+  25% {
+    transform: scale(1.35);
+    filter: brightness(2);
+  }
+
+  50% {
+    transform: scale(1.15);
+    filter: brightness(1.5);
+  }
+
+  100% {
+    transform: scale(1.1);
+    filter: brightness(1);
+  }
+
+}
+
+
+/* 勝者カードの脈動 */
+@keyframes winnerPulse {
+
+  from {
+    box-shadow:
+      0 0 15px #fff,
+      0 0 35px #fff,
+      0 0 60px #aaa;
+  }
+
+  to {
+    box-shadow:
+      0 0 25px #fff,
+      0 0 55px #fff,
+      0 0 100px #aaa;
+  }
+
+}
+
+
+/* =========================
+   YOU WIN / YOU LOSE
+========================= */
+
+.battle-overlay.show #battleText {
+
+  animation:
+    resultAppear
+    0.65s
+    cubic-bezier(.15, 1.5, .3, 1)
+    forwards;
+}
+
+
+@keyframes resultAppear {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(0.2)
+      rotate(-8deg);
+  }
+
+  60% {
+    opacity: 1;
+
+    transform:
+      scale(1.2)
+      rotate(2deg);
+  }
+
+  80% {
+    transform:
+      scale(0.95)
+      rotate(-1deg);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      scale(1)
+      rotate(0);
+  }
+
+}
+
+
+/* =========================
+   勝敗発表時の画面フラッシュ
+========================= */
+
+.battle-overlay.show {
+  animation:
+    battleFlash
+    0.45s
+    ease-out;
+}
+
+
+@keyframes battleFlash {
+
+  0% {
+    opacity: 0;
+  }
+
+  35% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 1;
+  }
+
+}
+
+
+/* =========================
+   スマホ用
+========================= */
+
+@media (max-width: 600px) {
+
+  .winner-card {
+    animation:
+      winnerFlashMobile 0.7s ease-out,
+      winnerPulse 1s 0.7s infinite alternate;
+  }
+
+}
+
+
+@keyframes winnerFlashMobile {
+
+  0% {
+    transform: scale(1);
+  }
+
+  30% {
+    transform: scale(1.2);
+  }
+
+  60% {
+    transform: scale(1.08);
+  }
+
+  100% {
+    transform: scale(1.05);
+  }
+
+}
