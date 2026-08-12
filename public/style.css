@@ -220,3 +220,352 @@ button:hover{background:#555}.row{margin-bottom:10px}.join{display:grid;grid-tem
   }
 
 }
+/* =========================
+   NUMBER CROSS バトル演出
+========================= */
+
+.battle-card {
+  position: relative;
+  z-index: 5;
+}
+
+.left-card {
+  transform: translateX(-180px) scale(.8);
+}
+
+.right-card {
+  transform: translateX(180px) scale(.8);
+}
+
+
+/* 中央へ突進 */
+
+.attack-left {
+  animation:
+    attackLeft
+    .55s
+    cubic-bezier(.2,1.5,.3,1)
+    forwards;
+}
+
+.attack-right {
+  animation:
+    attackRight
+    .55s
+    cubic-bezier(.2,1.5,.3,1)
+    forwards;
+}
+
+
+@keyframes attackLeft {
+
+  0% {
+    transform:
+      translateX(-180px)
+      scale(.8)
+      rotate(-12deg);
+  }
+
+  100% {
+    transform:
+      translateX(55px)
+      scale(1.15)
+      rotate(0);
+  }
+
+}
+
+
+@keyframes attackRight {
+
+  0% {
+    transform:
+      translateX(180px)
+      scale(.8)
+      rotate(12deg);
+  }
+
+  100% {
+    transform:
+      translateX(-55px)
+      scale(1.15)
+      rotate(0);
+  }
+
+}
+
+
+/* 激突 */
+
+.impact {
+  animation:
+    impact
+    .35s
+    ease-out
+    forwards;
+}
+
+@keyframes impact {
+
+  0% {
+    transform: scale(1.15);
+  }
+
+  35% {
+    transform: scale(1.35) rotate(3deg);
+  }
+
+  60% {
+    transform: scale(.95) rotate(-3deg);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
+
+/* 勝者 */
+
+.winner-card {
+
+  box-shadow:
+    0 0 15px #fff,
+    0 0 40px #fff,
+    0 0 80px #aaa;
+
+  animation:
+    winnerPulse
+    .7s
+    infinite alternate;
+}
+
+@keyframes winnerPulse {
+
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.12);
+  }
+
+}
+
+
+/* 敗者 */
+
+.loser-card {
+
+  opacity: .35;
+
+  filter: grayscale(1);
+
+  transform:
+    scale(.8)
+    rotate(8deg);
+}
+
+
+/* 爆発粒子 */
+
+.particle {
+
+  position: fixed;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  z-index: 20;
+
+  pointer-events: none;
+
+  animation:
+    particleExplosion
+    .9s
+    ease-out
+    forwards;
+}
+
+@keyframes particleExplosion {
+
+  0% {
+
+    transform:
+      translate(0,0)
+      scale(1);
+
+    opacity: 1;
+
+  }
+
+  100% {
+
+    transform:
+      translate(var(--x),var(--y))
+      scale(0);
+
+    opacity: 0;
+
+  }
+
+}
+
+
+/* 勝敗画面 */
+
+.battle-overlay {
+
+  position: fixed;
+
+  inset: 0;
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  background: #0009;
+
+  z-index: 100;
+
+  pointer-events: none;
+}
+
+
+.battle-overlay.show {
+
+  display: flex;
+
+  animation:
+    overlayIn
+    .25s
+    ease-out;
+}
+
+
+#battleText {
+
+  font-size:
+    clamp(45px, 12vw, 100px);
+
+  font-weight: 1000;
+
+  font-style: italic;
+
+  letter-spacing: .06em;
+
+  text-align: center;
+
+  text-shadow:
+    0 0 10px #fff,
+    0 0 30px #fff,
+    0 0 70px #aaa;
+
+  animation:
+    resultPop
+    .8s
+    cubic-bezier(.1,1.5,.3,1);
+}
+
+
+@keyframes overlayIn {
+
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+
+}
+
+
+@keyframes resultPop {
+
+  0% {
+
+    transform:
+      scale(.2)
+      rotate(-10deg);
+
+    opacity: 0;
+
+  }
+
+  60% {
+
+    transform:
+      scale(1.15)
+      rotate(2deg);
+
+    opacity: 1;
+
+  }
+
+  100% {
+
+    transform:
+      scale(1)
+      rotate(0);
+
+  }
+
+}
+
+
+/* スマホ */
+
+@media (max-width: 600px) {
+
+  .left-card {
+    transform:
+      translateX(-80px)
+      scale(.7);
+  }
+
+  .right-card {
+    transform:
+      translateX(80px)
+      scale(.7);
+  }
+
+  @keyframes attackLeft {
+
+    0% {
+      transform:
+        translateX(-80px)
+        scale(.7);
+    }
+
+    100% {
+      transform:
+        translateX(30px)
+        scale(1);
+    }
+
+  }
+
+  @keyframes attackRight {
+
+    0% {
+      transform:
+        translateX(80px)
+        scale(.7);
+    }
+
+    100% {
+      transform:
+        translateX(-30px)
+        scale(1);
+    }
+
+  }
+
+}
