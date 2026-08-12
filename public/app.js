@@ -15,11 +15,13 @@ function connect() {
     $("status").textContent = "サーバーから切断されました";
   };
 
-  ws.onmessage = e => handle(JSON.parse(e.data));
+  ws.onmessage = e => {
+    handle(JSON.parse(e.data));
+  };
 }
 
 function send(data) {
-  if (ws?.readyState === 1) {
+  if (ws && ws.readyState === 1) {
     ws.send(JSON.stringify(data));
   }
 }
@@ -28,12 +30,22 @@ function playerName() {
   return $("name").value.trim() || "PLAYER";
 }
 
+
+// ==========================
+// ルーム作成
+// ==========================
+
 $("create").onclick = () => {
   send({
     type: "create",
     name: playerName()
   });
 };
+
+
+// ==========================
+// ルーム参加
+// ==========================
 
 $("join").onclick = () => {
   send({
@@ -43,10 +55,20 @@ $("join").onclick = () => {
   });
 };
 
-$("back").onclick = () => location.reload();
+
+// ==========================
+// ロビーへ戻る
+// ==========================
+
+$("back").onclick = () => {
+  location.reload();
+};
 
 
+// ==========================
 // 数字ボタン
+// ==========================
+
 for (let n = 1; n <= 9; n++) {
 
   const button = document.createElement("button");
@@ -65,19 +87,22 @@ for (let n = 1; n <= 9; n++) {
 
     $("message").textContent =
       "NUMBER " + n + " を選択";
-
   };
 
   $("buttons").appendChild(button);
 }
 
 
+// ==========================
 // 爆発エフェクト
+// ==========================
+
 function explosion() {
 
-  for (let i = 0; i < 36; i++) {
+  for (let i = 0; i < 30; i++) {
 
-    const particle = document.createElement("div");
+    const particle =
+      document.createElement("div");
 
     particle.className = "particle";
 
@@ -86,29 +111,46 @@ function explosion() {
 
     particle.style.setProperty(
       "--x",
-      (Math.random() * 500 - 250) + "px"
+      (Math.random() * 400 - 200) + "px"
     );
 
     particle.style.setProperty(
       "--y",
-      (Math.random() * 400 - 200) + "px"
+      (Math.random() * 300 - 150) + "px"
     );
 
     document.body.appendChild(particle);
 
     setTimeout(() => {
       particle.remove();
-    }, 900);
+    }, 800);
   }
 }
 
 
+// ==========================
 // 勝敗表示
+// ==========================
+
 function showResult(text, win) {
 
   const overlay = $("battleOverlay");
 
-  $("battleText").textContent = text;
+  // 演出用HTMLが無い場合は
+  // ゲームを止めない
+  if (!overlay) {
+    $("message").textContent = text;
+    return;
+  }
+
+  const battleText = $("battleText");
+
+  if (!battleText) {
+    $("message").textContent = text;
+    return;
+  }
+
+  battleText.textContent = text;
 
   overlay.className =
     "battle-overlay show " +
@@ -120,19 +162,27 @@ function showResult(text, win) {
 }
 
 
-// カードを中央に飛ばす
+// ==========================
+// カード演出
+// ==========================
+
 function battleAnimation(p1, p2, result) {
 
   const left = $("p1card");
   const right = $("p2card");
 
-  left.className = "card battle-card left-card";
-  right.className = "card battle-card right-card";
+  // カードを表示
+  left.className =
+    "card battle-card left-card";
+
+  right.className =
+    "card battle-card right-card";
 
   left.textContent = p1;
   right.textContent = p2;
 
-  // 一旦少し待つ
+
+  // 中央へ移動
   setTimeout(() => {
 
     left.classList.add("attack-left");
@@ -158,13 +208,19 @@ function battleAnimation(p1, p2, result) {
     const win =
       result === (me === 1 ? 1 : -1);
 
-    left.classList.add(
-      result === 1 ? "winner-card" : "loser-card"
-    );
 
-    right.classList.add(
-      result === -1 ? "winner-card" : "loser-card"
-    );
+    if (result === 1) {
+
+      left.classList.add("winner-card");
+      right.classList.add("loser-card");
+
+    } else if (result === -1) {
+
+      right.classList.add("winner-card");
+      left.classList.add("loser-card");
+
+    }
+
 
     showResult(
       win ? "YOU WIN!" : "YOU LOSE!",
@@ -172,14 +228,22 @@ function battleAnimation(p1, p2, result) {
     );
 
     $("message").textContent =
-      win ? "あなたの勝ち！" : "あなたの負け…";
+      win
+        ? "あなたの勝ち！"
+        : "あなたの負け…";
 
   }, 900);
 }
 
 
+// ==========================
+// サーバーからのデータ処理
+// ==========================
+
 function handle(m) {
 
+
+  // エラー
   if (m.type === "error") {
 
     alert(m.message);
@@ -187,11 +251,13 @@ function handle(m) {
   }
 
 
+  // ルーム参加成功
   if (m.type === "joined") {
 
     me = m.player;
 
-    $("roomId").textContent = m.roomId;
+    $("roomId").textContent =
+      m.roomId;
 
     $("lobby").classList.add("hidden");
     $("game").classList.remove("hidden");
@@ -205,18 +271,25 @@ function handle(m) {
   }
 
 
+  // ゲーム状態
   if (m.type === "state") {
 
-    $("round").textContent = m.round;
+    $("round").textContent =
+      m.round;
 
     $("scores").textContent =
-      `${m.p1Score} - ${m.p2Score}`;
+      m.p1Score + " - " + m.p2Score;
 
     $("p1state").textContent =
-      m.p1Connected ? "接続中" : "待機中";
+      m.p1Connected
+        ? "接続中"
+        : "待機中";
 
     $("p2state").textContent =
-      m.p2Connected ? "接続中" : "待機中";
+      m.p2Connected
+        ? "接続中"
+        : "待機中";
+
 
     if (m.status === "playing") {
 
@@ -228,6 +301,7 @@ function handle(m) {
   }
 
 
+  // 自分が数字を選択
   if (m.type === "waiting") {
 
     $("message").textContent =
@@ -237,6 +311,7 @@ function handle(m) {
   }
 
 
+  // ラウンド結果
   if (m.type === "roundResult") {
 
     battleAnimation(
@@ -245,14 +320,19 @@ function handle(m) {
       m.result
     );
 
+
     setTimeout(() => {
 
       for (let n = 1; n <= 9; n++) {
 
-        $("n" + n)
-          .classList
-          .remove("used");
+        const button =
+          $("n" + n);
+
+        if (button) {
+          button.classList.remove("used");
+        }
       }
+
 
       $("p1card").className =
         "card hidden";
@@ -266,10 +346,12 @@ function handle(m) {
   }
 
 
+  // ゲーム終了
   if (m.type === "gameOver") {
 
     const win =
       m.winner === me;
+
 
     showResult(
       m.winner === 0
@@ -279,6 +361,7 @@ function handle(m) {
           : "DEFEAT",
       win
     );
+
 
     $("message").textContent =
       m.winner === 0
@@ -291,12 +374,19 @@ function handle(m) {
   }
 
 
+  // 相手退出
   if (m.type === "opponentLeft") {
 
     $("message").textContent =
       "相手が退出しました。";
+
+    return;
   }
 }
 
+
+// ==========================
+// 起動
+// ==========================
 
 connect();
