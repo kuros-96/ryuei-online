@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NIGHT TRACE - Prototype</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0d1117;color:#eee;font-family:system-ui,"Yu Gothic",sans-serif}main{max-width:900px;margin:auto;padding:24px}h1{text-align:center;letter-spacing:.2em;margin:0 0 4px}.sub{text-align:center;color:#9aa4b2;margin-bottom:20px}.panel{background:#151b23;border:1px solid #303846;border-radius:14px;padding:16px}.legend{text-align:center;color:#b9c2ce;margin-bottom:16px}.city{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;max-width:760px;margin:auto}.building{aspect-ratio:1;background:#29323d;border:2px solid #566273;border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative}.building .num{position:absolute;top:4px;left:5px;font-size:10px;color:#8e99a8}.road{background:#242b34;border-radius:3px}.intersection{aspect-ratio:1;background:#3a424d;border-radius:5px;display:flex;align-items:center;justify-content:center}.heli{font-size:19px;filter:drop-shadow(0 0 3px #fff)}.note{text-align:center;margin-top:16px;color:#aeb7c4;font-size:13px}@media(max-width:600px){main{padding:10px}.city{gap:2px}.heli{font-size:14px}}
+</style>
+</head>
+<body>
+<main>
+<h1>NIGHT TRACE</h1>
+<div class="sub">STEP 1 — 5×5 CITY MAP</div>
+<section class="panel">
+<div class="legend">25棟の建物 ＋ 建物間の道路 ＋ 交差点（ヘリ配置位置）</div>
+<div id="city" class="city"></div>
+<div class="note">建物は5×5。ヘリは建物の上ではなく、建物と建物の間の交差点に配置。</div>
+</section>
+</main>
+<script>
+const city=document.getElementById('city');
+// 9×9の表示グリッド。偶数×偶数＝25棟、奇数×奇数＝交差点。
+// ヘリは交差点に3機配置。
+const helicopters=new Set(['1,1','1,7','7,3']);
+let buildingNo=1;
+for(let gr=0;gr<9;gr++){
+  for(let gc=0;gc<9;gc++){
+    const el=document.createElement('div');
+    if(gr%2===0&&gc%2===0){
+      el.className='building';
+      el.innerHTML='<span class="num">'+buildingNo+'</span>';
+      buildingNo++;
+    }else if(gr%2===1&&gc%2===1){
+      el.className='intersection';
+      if(helicopters.has(gr+','+gc))el.innerHTML='<span class="heli">🚁</span>';
+    }else{
+      el.className='road';
+    }
+    city.appendChild(el);
+  }
+}
+</script>
+</body>
+</html>
