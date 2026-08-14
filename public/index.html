@@ -1,278 +1,41 @@
 <!doctype html>
 <html lang="ja">
-
 <head>
-
-  <meta charset="utf-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
-
-  <title>NUMBER CROSS</title>
-
-  <link
-    rel="stylesheet"
-    href="/style.css"
-  >
-
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NIGHT TRACE</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101318;color:#eee;font-family:system-ui,"Yu Gothic",sans-serif}main{max-width:760px;margin:auto;padding:24px}h1{text-align:center;letter-spacing:.2em;margin:5px 0 8px}.sub{text-align:center;color:#aab3bf}.panel{background:#181e27;border:1px solid #374151;border-radius:14px;padding:16px;margin:16px 0}.map{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;max-width:560px;margin:18px auto}.building{aspect-ratio:1;background:#29323d;border:2px solid #596575;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;font-size:28px}.building:hover{border-color:#fff}.building.selected{border-color:#f0d84a;box-shadow:inset 0 0 0 4px #f0d84a}.num{position:absolute;top:5px;left:7px;font-size:11px;color:#9ba5b2}.center{text-align:center}.status{font-weight:700;margin:12px}.button{border:0;border-radius:9px;background:#3b4c66;color:#fff;padding:11px 22px;font-weight:700;font-size:16px;cursor:pointer}.button:disabled{opacity:.45;cursor:not-allowed}
+</style>
 </head>
-
-
 <body>
-
 <main>
-
-  <!-- =========================
-       NUMBER CROSS ロゴ
-  ========================== -->
-
-  <header class="game-logo">
-
-    <div class="logo-number">
-      NUMBER
-    </div>
-
-    <div class="logo-cross">
-      CROSS
-    </div>
-
-    <div class="logo-sub">
-      ONLINE BATTLE
-    </div>
-
-    <div class="number-orbit">
-
-      <span>1</span>
-      <span>2</span>
-      <span>3</span>
-      <span>4</span>
-      <span>5</span>
-      <span>6</span>
-      <span>7</span>
-      <span>8</span>
-      <span>9</span>
-
-    </div>
-
-  </header>
-
-
-  <!-- =========================
-       ロビー
-  ========================== -->
-
-  <section
-    id="lobby"
-    class="panel"
-  >
-
-    <input
-      id="name"
-      type="text"
-      maxlength="16"
-      placeholder="プレイヤー名"
-    >
-
-    <div class="row">
-
-      <button
-        id="create"
-        type="button"
-      >
-        ルームを作る
-      </button>
-
-    </div>
-
-
-    <div class="join">
-
-      <input
-        id="room"
-        type="text"
-        maxlength="6"
-        placeholder="ルームコード"
-      >
-
-      <button
-        id="join"
-        type="button"
-      >
-        参加する
-      </button>
-
-    </div>
-
-
-    <p id="status">
-      ルームを作成するか、コードを入力して参加してください。
-    </p>
-
-  </section>
-
-
-  <!-- =========================
-       ゲーム画面
-  ========================== -->
-
-  <section
-    id="game"
-    class="panel hidden"
-  >
-
-    <div class="top">
-
-      <span>
-        ROOM
-        <b id="roomId">---</b>
-      </span>
-
-      <span>
-        R<span id="round">1</span>/9
-      </span>
-
-      <span id="scores">
-        0 - 0
-      </span>
-
-    </div>
-
-
-    <!-- =========================
-         バトルエリア
-    ========================== -->
-
-    <div class="arena">
-
-      <!-- PLAYER 1 -->
-
-      <div>
-
-        <h2 id="p1name">
-          PLAYER 1
-        </h2>
-
-        <div
-          id="p1card"
-          class="card hidden"
-        >
-          ？
-        </div>
-
-        <div id="p1state">
-          待機中
-        </div>
-
-      </div>
-
-
-      <!-- PLAYER 2 -->
-
-      <div>
-
-        <h2 id="p2name">
-          PLAYER 2
-        </h2>
-
-        <div
-          id="p2card"
-          class="card hidden"
-        >
-          ？
-        </div>
-
-        <div id="p2state">
-          待機中
-        </div>
-
-      </div>
-
-    </div>
-
-
-    <!-- =========================
-         メッセージ
-    ========================== -->
-
-    <div
-      id="message"
-      class="message"
-    >
-      相手を待っています…
-    </div>
-
-
-    <!-- =========================
-         残り数字
-    ========================== -->
-
-    <div
-      id="remaining"
-      class="remaining"
-    >
-      残り数字：9枚
-    </div>
-
-
-    <!-- =========================
-         数字ボタン
-         app.jsがここに1～9を生成
-    ========================== -->
-
-    <div
-      id="buttons"
-      class="buttons"
-    ></div>
-
-
-    <!-- =========================
-         ルール
-    ========================== -->
-
-    <p class="rule">
-      通常は大きい数字が勝ち。1は9に勝つ。<br>
-      同じ数字は禁止・使用済み数字は再使用不可。
-    </p>
-
-
-    <!-- =========================
-         戻る
-    ========================== -->
-
-    <button
-      id="back"
-      type="button"
-    >
-      ロビーへ戻る
-    </button>
-
-  </section>
-
+<h1>NIGHT TRACE</h1>
+<div class="sub">試作版：犯人の初期位置を選択</div>
+<section class="panel">
+<div class="center">5×5の建物から犯人の初期位置を直接クリック</div>
+<div id="map" class="map"></div>
+<div id="status" class="status center">初期位置：未選択</div>
+<div class="center"><button id="start" class="button" disabled>ゲーム開始</button></div>
+</section>
 </main>
-
-
-<!-- =========================
-     勝敗オーバーレイ
-========================== -->
-
-<div
-  id="battleOverlay"
-  class="battle-overlay"
->
-
-  <div id="battleText"></div>
-
-</div>
-
-
-<!-- =========================
-     JavaScript
-========================== -->
-
-<script src="/app.js"></script>
-
+<script>
+const map=document.getElementById('map');
+const status=document.getElementById('status');
+const start=document.getElementById('start');
+let selected=null;
+for(let r=0;r<5;r++)for(let c=0;c<5;c++){
+ const cell=document.createElement('div');cell.className='building';
+ cell.innerHTML='<span class="num">'+(r*5+c+1)+'</span>';
+ cell.addEventListener('click',()=>{
+  document.querySelectorAll('.building').forEach(x=>{x.classList.remove('selected');const m=x.querySelector('.mark');if(m)m.remove()});
+  selected={r,c};cell.classList.add('selected');
+  const mark=document.createElement('span');mark.className='mark';mark.textContent='🟡';cell.appendChild(mark);
+  status.textContent='初期位置：建物'+(r*5+c+1)+'（'+(r+1)+'行'+(c+1)+'列）';start.disabled=false;
+ });
+ map.appendChild(cell);
+}
+start.addEventListener('click',()=>{if(!selected)return;status.textContent='初期位置：建物'+(selected.r*5+selected.c+1)+'　選択完了';start.textContent='選択済み';start.disabled=true;});
+</script>
 </body>
-
 </html>
